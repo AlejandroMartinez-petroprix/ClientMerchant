@@ -1,24 +1,43 @@
 package com.example.clientmicroservice.model;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 
-@Data
+@DynamoDbBean
 @EqualsAndHashCode(callSuper = true)
-@DynamoDBDocument
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
+@ToString
 public class Client extends MainTable {
+    public static final String CLIENT_PK_PREFIX = "CLIENT#";
+    public static final String CLIENT_SK_PREFIX = "PROFILE";
 
-    @DynamoDBAttribute
     private String name;
-
-    @DynamoDBAttribute
     private String surname;
-
-    @DynamoDBAttribute
     private String cifNifNie;
-
-    @DynamoDBAttribute
     private String phone;
+
+    public void setId(String id) {
+        setPartitionKey(ClientKeyBuilder.makePartitionKey(id));
+        setSortKey(ClientKeyBuilder.makeSortKey());
+    }
+
+    public String getId() {
+        return getPartitionKey().substring(CLIENT_PK_PREFIX.length());
+    }
+
+    public static class ClientKeyBuilder {
+        private ClientKeyBuilder() {}
+
+        public static String makePartitionKey(String id) {
+            return CLIENT_PK_PREFIX + id;
+        }
+
+        public static String makeSortKey() {
+            return CLIENT_SK_PREFIX;
+        }
+    }
 }
