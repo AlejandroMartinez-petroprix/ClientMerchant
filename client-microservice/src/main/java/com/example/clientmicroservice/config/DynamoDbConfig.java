@@ -1,6 +1,7 @@
 package com.example.clientmicroservice.config;
 
 import com.example.clientmicroservice.model.Client;
+import com.example.clientmicroservice.utils.AwsCredentials;
 import com.example.clientmicroservice.utils.AwsProperties;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
@@ -19,7 +20,7 @@ import java.net.URI;
 
 @Slf4j
 @Configuration
-@EnableConfigurationProperties(AwsProperties.class)
+@EnableConfigurationProperties({AwsProperties.class, AwsCredentials.class})
 public class DynamoDbConfig {
 
     private final AwsProperties awsProperties;
