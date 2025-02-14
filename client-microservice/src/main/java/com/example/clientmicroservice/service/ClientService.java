@@ -63,5 +63,9 @@ public class ClientService {
         clientRepository.update(client);
         return clientMapper.toDto(client);
     }
+    public boolean existsById(String id) {
+        return clientRepository.findById(id).isPresent();
+    }
+
 }
 
