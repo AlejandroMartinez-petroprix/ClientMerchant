@@ -3,8 +3,6 @@ package com.example.clientmicroservice.model;
 import lombok.*;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 
-import javax.validation.constraints.Email;
-
 @DynamoDbBean
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -24,23 +22,12 @@ public class Client extends MainTable {
     private String email;
 
     public void setId(String id) {
-        setPartitionKey(ClientKeyBuilder.makePartitionKey(id));
-        setSortKey(ClientKeyBuilder.makeSortKey());
+        setPartitionKey(CLIENT_PK_PREFIX + id);
+        setSortKey(CLIENT_SK_PREFIX);
     }
 
     public String getId() {
         return getPartitionKey().substring(CLIENT_PK_PREFIX.length());
     }
 
-    public static class ClientKeyBuilder {
-        private ClientKeyBuilder() {}
-
-        public static String makePartitionKey(String id) {
-            return CLIENT_PK_PREFIX + id;
-        }
-
-        public static String makeSortKey() {
-            return CLIENT_SK_PREFIX;
-        }
-    }
 }
