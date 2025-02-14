@@ -1,29 +1,33 @@
 package com.example.clientmicroservice.service;
 
+import com.example.clientmicroservice.mappers.ClientMapper;
 import com.example.clientmicroservice.model.Client;
+import com.example.clientmicroservice.model.dto.ClientInputDTO;
+import com.example.clientmicroservice.model.dto.ClientOutputDTO;
 import com.example.clientmicroservice.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ClientService {
     private final ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
 
-    public Client createTestClient() {
-        Client client = Client.builder()
-                .name("Test Client")
-                .surname("Test Surname")
-                .cifNifNie("12345678A")
-                .phone("123456789")
-                .build();
-
-        return clientRepository.create(client);
+    public ClientOutputDTO createClient(ClientInputDTO clientInputDTO) {
+        Client client = clientMapper.toEntity(clientInputDTO);
+        client.setId(java.util.UUID.randomUUID().toString());
+        clientRepository.create(client);
+        return clientMapper.toDto(client);
     }
 
-    public List<Client> getAllClients() {
-        return clientRepository.findAll();
+    public List<ClientOutputDTO> getAllClients() {
+        return clientRepository.findAll().stream()
+                .map(clientMapper::toDto)
+                .collect(Collectors.toList());
     }
 }
+
