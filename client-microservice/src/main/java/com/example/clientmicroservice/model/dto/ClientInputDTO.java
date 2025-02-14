@@ -2,7 +2,7 @@ package com.example.clientmicroservice.model.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Email;
 
 @Getter
 @Setter
@@ -14,9 +14,6 @@ public class ClientInputDTO {
     private String surname;
     private String cifNifNie;
     private String phone;
-    @Pattern(
-            regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",
-            message = "Invalid email format"
-    )
+    @Email
     private String email;
 }
