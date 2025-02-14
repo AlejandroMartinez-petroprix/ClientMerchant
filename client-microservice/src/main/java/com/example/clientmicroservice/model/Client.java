@@ -3,6 +3,8 @@ package com.example.clientmicroservice.model;
 import lombok.*;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 
+import javax.validation.constraints.Email;
+
 @DynamoDbBean
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -19,6 +21,7 @@ public class Client extends MainTable {
     private String surname;
     private String cifNifNie;
     private String phone;
+    private String email;
 
     public void setId(String id) {
         setPartitionKey(ClientKeyBuilder.makePartitionKey(id));
