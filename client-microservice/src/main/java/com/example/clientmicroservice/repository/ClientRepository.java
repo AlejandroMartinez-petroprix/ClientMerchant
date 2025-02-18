@@ -3,13 +3,17 @@ package com.example.clientmicroservice.repository;
 import com.example.clientmicroservice.model.Client;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 import org.springframework.stereotype.Repository;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Repository
@@ -44,11 +48,25 @@ public class ClientRepository {
     }
 
     public Optional<Client> findByEmail(String email) {
-        log.info("Buscando cliente por email: {} en DynamoDB...", email);
-        return clientTable.scan().items().stream()
-                .filter(client -> email.equals(client.getEmail()))
-                .findFirst();
+        log.info("Buscando cliente con email: {} en GSI1...", email);
+
+        try {
+            DynamoDbIndex<Client> gsi = clientTable.index("GSI1");
+
+            var results = gsi.query(r -> r.queryConditional(
+                    QueryConditional.keyEqualTo(k -> k.partitionValue(email))
+            ));
+
+            return StreamSupport.stream(results.spliterator(), false)
+                    .flatMap(page -> page.items().stream())
+                    .findFirst();
+
+        } catch (Exception e) {
+            log.error("No se pudo buscar el cliente por email en GSI1.");
+            return Optional.empty();
+        }
     }
+
 
     public void update(Client client) {
         log.info("Actualizando cliente con ID: {} en DynamoDB...", client.getId());
