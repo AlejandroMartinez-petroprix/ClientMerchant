@@ -1,5 +1,6 @@
 package com.example.clientmicroservice.service;
 
+import com.example.clientmicroservice.feign.MerchantFeignClient;
 import com.example.clientmicroservice.mappers.ClientMapper;
 import com.example.clientmicroservice.model.Client;
 import com.example.clientmicroservice.model.dto.ClientInputDTO;
@@ -17,18 +18,13 @@ import java.util.stream.Collectors;
 public class ClientService {
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
+    private final MerchantFeignClient merchantClient;
 
     public ClientOutputDTO createClient(ClientInputDTO clientInputDTO) {
         Client client = clientMapper.toEntity(clientInputDTO);
         client.setId(java.util.UUID.randomUUID().toString());
         clientRepository.create(client);
         return clientMapper.toDto(client);
-    }
-
-    public List<ClientOutputDTO> getAllClients() {
-        return clientRepository.findAll().stream()
-                .map(clientMapper::toDto)
-                .collect(Collectors.toList());
     }
 
     public ClientOutputDTO getClientById(String id, boolean simpleOutput) {
@@ -63,8 +59,14 @@ public class ClientService {
         clientRepository.update(client);
         return clientMapper.toDto(client);
     }
-    public boolean existsById(String id) {
-        return clientRepository.findById(id).isPresent();
+
+    public boolean doesMerchantExist(String merchantId) {
+        try {
+            merchantClient.findById(merchantId, true);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }

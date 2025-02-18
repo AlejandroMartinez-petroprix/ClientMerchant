@@ -37,15 +37,6 @@ public class ClientController {
     }
 
     /**
-     * Endpoint para obtener todos los clientes
-     */
-    @GetMapping
-    public ResponseEntity<List<ClientOutputDTO>> getAllClients() {
-        List<ClientOutputDTO> clients = clientService.getAllClients();
-        return ResponseEntity.ok(clients);
-    }
-
-    /**
      * Endpoint para obtener un cliente por ID con opción de simpleOutput
      */
     @GetMapping("/{id}")
@@ -76,11 +67,12 @@ public class ClientController {
     public ResponseEntity<ClientOutputDTO> updateClient(@PathVariable String id, @RequestBody ClientInputDTO clientInputDTO) {
         return ResponseEntity.ok(clientService.updateClient(id, clientInputDTO));
     }
-    @GetMapping("/{id}/exists")
-    public ResponseEntity<Boolean> clientExists(@PathVariable String id) {
-        boolean exists = clientService.existsById(id);
-        return ResponseEntity.ok(exists);
+
+    @GetMapping("/merchant/{merchantId}/exists")
+    public ResponseEntity<Boolean> checkMerchantExists(@PathVariable String merchantId) {
+        return ResponseEntity.ok(clientService.doesMerchantExist(merchantId));
     }
+
 
 }
 
