@@ -1,15 +1,12 @@
 package com.example.merchantmicroservice.service;
 
-import com.example.merchantmicroservice.feign.Client;
 import com.example.merchantmicroservice.mappers.MerchantMapper;
 import com.example.merchantmicroservice.model.Merchant;
 import com.example.merchantmicroservice.model.dto.MerchantInputDTO;
 import com.example.merchantmicroservice.model.dto.MerchantOutputDTO;
 import com.example.merchantmicroservice.repository.MerchantRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,14 +18,9 @@ import java.util.Optional;
 public class MerchantService {
     private final MerchantRepository merchantRepository;
     private final MerchantMapper merchantMapper;
-    private final Client feignClient;
 
 
     public MerchantOutputDTO createMerchant(MerchantInputDTO merchantInputDTO) {
-        if (!feignClient.clientExists(merchantInputDTO.getClientId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El cliente no existe");
-        }
-
         Merchant merchant = merchantMapper.toEntity(merchantInputDTO);
         merchant.setId(java.util.UUID.randomUUID().toString());
         merchantRepository.create(merchant);

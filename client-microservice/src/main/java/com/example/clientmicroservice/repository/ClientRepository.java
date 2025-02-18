@@ -29,11 +29,6 @@ public class ClientRepository {
         return client;
     }
 
-    public List<Client> findAll() {
-        log.info("Buscando todos los clientes en DynamoDB...");
-        return clientTable.scan().items().stream().collect(Collectors.toList());
-    }
-
     public Optional<Client> findById(String id) {
         log.info("Buscando al cliente con ID: {} en DynamoDB...", id);
 
