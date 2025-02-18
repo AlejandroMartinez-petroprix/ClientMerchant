@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Optional;
 
 
 @Service
@@ -21,21 +20,33 @@ public class MerchantService {
 
 
     public MerchantOutputDTO createMerchant(MerchantInputDTO merchantInputDTO) {
+        List<Merchant> existingMerchants = merchantRepository.findByClientId(merchantInputDTO.getClientId());
+        boolean exists = existingMerchants.stream()
+                .anyMatch(m -> m.getName().equalsIgnoreCase(merchantInputDTO.getName()));
+
+        if (exists) {
+            throw new IllegalStateException("Ya existe un merchant con ese nombre para el cliente " + merchantInputDTO.getClientId());
+        }
+
         Merchant merchant = merchantMapper.toEntity(merchantInputDTO);
         merchant.setId(java.util.UUID.randomUUID().toString());
-        merchantRepository.create(merchant);
-        return merchantMapper.toDto(merchant);
+
+        try {
+            merchantRepository.create(merchant);
+            return merchantMapper.toDto(merchant);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear el merchant: " + e.getMessage(), e);
+        }
     }
 
     public MerchantOutputDTO findById(String id, boolean simpleOutput) {
-        Optional<Merchant> merchantOpt = merchantRepository.findById(id);
-        if (merchantOpt.isPresent()) {
-            Merchant merchant = merchantOpt.get();
-            return simpleOutput ? new MerchantOutputDTO(merchant.getId(), null, null, null,null) : merchantMapper.toDto(merchant);
-        }
-        throw new RuntimeException("Merchant not found");
+        Merchant merchant = merchantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Merchant con ID " + id + " no encontrado."));
 
+        return simpleOutput ? new MerchantOutputDTO(merchant.getId(), null, null, null, null)
+                : merchantMapper.toDto(merchant);
     }
+
 
     public List<MerchantOutputDTO> findByName(String name) {
         return merchantRepository.findByName(name).stream()

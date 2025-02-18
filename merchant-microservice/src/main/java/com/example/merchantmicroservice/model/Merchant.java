@@ -1,7 +1,9 @@
 package com.example.merchantmicroservice.model;
 
 import lombok.*;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
 
 @DynamoDbBean
 @EqualsAndHashCode(callSuper = true)
@@ -29,4 +31,19 @@ public class Merchant extends MainTable {
         return getPartitionKey().substring(MERCHANT_PK_PREFIX.length());
     }
 
+    @DynamoDbAttribute("clientId")
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+        setGIndex2Pk(clientId);
+    }
+
+    @DynamoDbSecondaryPartitionKey(indexNames = "GSI1")
+    @DynamoDbAttribute("gIndex2Pk")
+    public String getGIndex2Pk() {
+        return super.getGIndex2Pk();
+    }
 }
