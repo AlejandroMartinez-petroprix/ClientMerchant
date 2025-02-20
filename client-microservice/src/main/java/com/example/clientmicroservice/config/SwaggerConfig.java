@@ -20,6 +20,9 @@ import java.util.List;
 @EnableSwagger2
 public class SwaggerConfig {
 
+    /*
+        * Configuración de Swagger
+     */
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -36,10 +39,16 @@ public class SwaggerConfig {
                 .securityContexts(Collections.singletonList(securityContext()));
     }
 
+    /*
+        * Configuración de la cabecera de la API
+     */
     private ApiKey apiKey() {
         return new ApiKey("JWT", "Authorization", "header");
     }
 
+    /*
+        * Que EP van a estar protegidos por la seguridad de la API
+     */
     private SecurityContext securityContext() {
         return SecurityContext.builder()
                 .securityReferences(defaultAuth())
@@ -47,6 +56,9 @@ public class SwaggerConfig {
                 .build();
     }
 
+    /*
+        * Configuración del scope de la API
+     */
     private List<SecurityReference> defaultAuth() {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[]{authorizationScope};

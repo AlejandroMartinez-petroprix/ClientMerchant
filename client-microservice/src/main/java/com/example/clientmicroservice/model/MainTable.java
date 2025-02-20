@@ -3,6 +3,9 @@ package com.example.clientmicroservice.model;
 import lombok.Data;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
+/*
+  Tabla única para todos los microservicios
+ */
 @Data
 @DynamoDbBean
 public class MainTable {

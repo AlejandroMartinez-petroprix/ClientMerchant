@@ -18,6 +18,9 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.net.URI;
 
+/*
+    Configuración de DynamoDB
+ */
 @Slf4j
 @Configuration
 @EnableConfigurationProperties({AwsProperties.class, AwsCredentials.class})
@@ -29,6 +32,9 @@ public class DynamoDbConfig {
         this.awsProperties = awsProperties;
     }
 
+    /*
+         Creación del cliente de DynamoDB a partir de las propiedades de AWS
+     */
     @Bean
     public DynamoDbClient dynamoDbClient() {
 
@@ -47,11 +53,17 @@ public class DynamoDbConfig {
         return builder.build();
     }
 
+    /*
+        Cliente de DynamoDB mejorado
+     */
     @Bean
     public DynamoDbEnhancedClient dynamoDbEnhancedClient(DynamoDbClient dynamoDbClient) {
         return DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient).build();
     }
 
+    /*
+        Tabla de DynamoDB principal
+     */
     @Bean
     public DynamoDbTable<Client> clientTable(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
         return dynamoDbEnhancedClient.table(awsProperties.getDynamoDbTableName(), TableSchema.fromBean(Client.class));

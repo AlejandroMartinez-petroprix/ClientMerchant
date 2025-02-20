@@ -4,10 +4,11 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+/*
+ * DTO para la salida de datos de un cliente
+ */
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 @Builder
 public class ClientOutputDTO {
 

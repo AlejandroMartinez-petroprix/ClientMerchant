@@ -1,6 +1,5 @@
 package com.example.clientmicroservice.controller;
 
-import com.example.clientmicroservice.model.Client;
 import com.example.clientmicroservice.model.dto.ClientInputDTO;
 import com.example.clientmicroservice.model.dto.ClientOutputDTO;
 import com.example.clientmicroservice.service.ClientService;
@@ -10,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -22,8 +18,6 @@ import java.util.List;
 @Slf4j
 public class ClientController {
     private final ClientService clientService;
-    private final ObjectMapper objectMapper;
-
 
     /**
      * Endpoint para crear un cliente
@@ -67,6 +61,9 @@ public class ClientController {
         return ResponseEntity.ok(clientService.updateClient(id, clientInputDTO));
     }
 
+    /**
+     * Endpoint para verificar si un merchant existe
+     */
     @GetMapping("/merchant/{merchantId}/exists")
     public ResponseEntity<Boolean> checkMerchantExists(@Valid @PathVariable String merchantId) {
         return ResponseEntity.ok(clientService.doesMerchantExist(merchantId));

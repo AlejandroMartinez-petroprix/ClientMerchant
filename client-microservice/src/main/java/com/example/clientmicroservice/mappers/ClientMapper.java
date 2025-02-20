@@ -7,6 +7,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
+/*
+    ClientMapper mapea los objetos de tipo Client con los objetos de tipo ClientInputDTO y ClientOutputDTO.
+ */
 @Component
 @Mapper(componentModel = "spring")
 public interface ClientMapper {

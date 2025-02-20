@@ -3,12 +3,13 @@ package com.example.clientmicroservice.model;
 import lombok.*;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
+/*
+   Clase que representa un cliente y que extiende de la tabla principal
+ */
 @DynamoDbBean
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@NoArgsConstructor @AllArgsConstructor
+@Getter @Setter
 @Builder
 @ToString
 public class Client extends MainTable {

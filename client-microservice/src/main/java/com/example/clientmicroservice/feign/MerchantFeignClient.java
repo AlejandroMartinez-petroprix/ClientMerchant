@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "merchant-microservice", url = "${merchant.service.url}")
 public interface MerchantFeignClient {
+    /*
+        * EP para LLamar al controlador de merchants por ID
+     */
     @GetMapping("/merchants/{id}")
     Object findById(@PathVariable("id") String merchantId, @RequestParam(required = false) boolean simpleOutput);
 }
