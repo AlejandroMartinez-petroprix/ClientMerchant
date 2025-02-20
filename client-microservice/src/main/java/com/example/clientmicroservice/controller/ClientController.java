@@ -5,6 +5,7 @@ import com.example.clientmicroservice.model.dto.ClientOutputDTO;
 import com.example.clientmicroservice.service.ClientService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/clients")
 @RequiredArgsConstructor
+@Slf4j
 public class ClientController {
     private final ClientService clientService;
     private final ObjectMapper objectMapper;
@@ -26,11 +28,12 @@ public class ClientController {
      * Endpoint para crear un cliente
      */
     @PostMapping
-    public ResponseEntity<?> createClient(@Valid @RequestBody ClientInputDTO clientInputDTO, HttpServletRequest request) throws IOException {
-        byte[] modifiedBody = (byte[]) request.getAttribute("cachedBody");
+    public ResponseEntity<?> createClient(@Valid HttpServletRequest request) throws IOException {
+        HttpServletRequest wrappedRequest = (HttpServletRequest) request.getAttribute("wrappedRequest");
 
-        if (modifiedBody != null) {
-            clientInputDTO = objectMapper.readValue(modifiedBody, ClientInputDTO.class);
+        ClientInputDTO clientInputDTO = null;
+        if (wrappedRequest != null) {
+            clientInputDTO = objectMapper.readValue(wrappedRequest.getInputStream(), ClientInputDTO.class);
         }
 
         return ResponseEntity.ok(clientService.createClient(clientInputDTO));
@@ -40,7 +43,7 @@ public class ClientController {
      * Endpoint para obtener un cliente por ID con opción de simpleOutput
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getClientById(@PathVariable String id, @RequestParam(required = false) boolean simpleOutput) {
+    public ResponseEntity<?> getClientById(@Valid @PathVariable String id, @RequestParam(required = false) boolean simpleOutput) {
         return ResponseEntity.ok(clientService.getClientById(id, simpleOutput));
     }
 
@@ -48,7 +51,7 @@ public class ClientController {
      * Endpoint para buscar clientes por nombre
      */
     @GetMapping("/search/by-name")
-    public ResponseEntity<List<ClientOutputDTO>> findByName(@RequestParam String name) {
+    public ResponseEntity<List<ClientOutputDTO>> findByName(@Valid @RequestParam String name) {
         return ResponseEntity.ok(clientService.findByName(name));
     }
 
@@ -56,7 +59,7 @@ public class ClientController {
      * Endpoint para buscar clientes por email
      */
     @GetMapping("/search/by-email")
-    public ResponseEntity<ClientOutputDTO> findByEmail(@RequestParam @Email String email) {
+    public ResponseEntity<ClientOutputDTO> findByEmail(@Valid @RequestParam String email) {
         return ResponseEntity.ok(clientService.findByEmail(email));
     }
 
@@ -64,14 +67,15 @@ public class ClientController {
      * Endpoint para actualizar un cliente
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ClientOutputDTO> updateClient(@PathVariable String id, @RequestBody ClientInputDTO clientInputDTO) {
+    public ResponseEntity<ClientOutputDTO> updateClient(@Valid @PathVariable String id, @RequestBody ClientInputDTO clientInputDTO) {
         return ResponseEntity.ok(clientService.updateClient(id, clientInputDTO));
     }
 
     @GetMapping("/merchant/{merchantId}/exists")
-    public ResponseEntity<Boolean> checkMerchantExists(@PathVariable String merchantId) {
+    public ResponseEntity<Boolean> checkMerchantExists(@Valid @PathVariable String merchantId) {
         return ResponseEntity.ok(clientService.doesMerchantExist(merchantId));
     }
+
 
 
 }
