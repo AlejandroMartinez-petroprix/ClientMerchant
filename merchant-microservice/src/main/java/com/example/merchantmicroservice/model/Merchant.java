@@ -41,9 +41,4 @@ public class Merchant extends MainTable {
         setGIndex2Pk(clientId);
     }
 
-    @DynamoDbSecondaryPartitionKey(indexNames = "GSI1")
-    @DynamoDbAttribute("gIndex2Pk")
-    public String getGIndex2Pk() {
-        return super.getGIndex2Pk();
-    }
 }

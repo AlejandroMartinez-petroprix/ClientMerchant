@@ -35,6 +35,7 @@ public class MainTable {
         return status;
     }
 
+    @DynamoDbSecondaryPartitionKey(indexNames = "GSI1")
     @DynamoDbAttribute("gIndex2Pk")
     public String getGIndex2Pk() {
         return gIndex2Pk;
