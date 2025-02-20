@@ -42,10 +42,13 @@ public class ClientRepository {
 
     public List<Client> findByName(String name) {
         log.info("Buscando clientes por nombre: {} en DynamoDB...", name);
+
         return clientTable.scan().items().stream()
+                .filter(client -> client.getPartitionKey().startsWith("CLIENT#"))
                 .filter(client -> client.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
     }
+
 
     public Optional<Client> findByEmail(String email) {
         log.info("Buscando cliente con email: {} en GSI1...", email);

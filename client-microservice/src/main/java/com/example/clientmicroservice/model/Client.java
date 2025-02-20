@@ -1,7 +1,7 @@
 package com.example.clientmicroservice.model;
 
 import lombok.*;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
 @DynamoDbBean
 @EqualsAndHashCode(callSuper = true)
@@ -28,6 +28,11 @@ public class Client extends MainTable {
 
     public String getId() {
         return getPartitionKey().substring(CLIENT_PK_PREFIX.length());
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+        setGIndex2Pk(email); // Guardar email en gIndex2Pk para que se indexe en GSI1
     }
 
 }

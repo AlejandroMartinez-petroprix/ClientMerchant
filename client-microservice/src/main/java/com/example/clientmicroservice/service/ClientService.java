@@ -22,7 +22,6 @@ public class ClientService {
 
     public ClientOutputDTO createClient(ClientInputDTO clientInputDTO) {
         Client client = clientMapper.toEntity(clientInputDTO);
-        client.setId(java.util.UUID.randomUUID().toString());
         clientRepository.create(client);
         return clientMapper.toDto(client);
     }
@@ -37,10 +36,16 @@ public class ClientService {
     }
 
     public List<ClientOutputDTO> findByName(String name) {
-        return clientRepository.findByName(name).stream()
+        List<Client> clients = clientRepository.findByName(name);
+
+        if (clients.isEmpty()) {
+            throw new RuntimeException("Client or clients not found");        }
+
+        return clients.stream()
                 .map(clientMapper::toDto)
                 .collect(Collectors.toList());
     }
+
 
     public ClientOutputDTO findByEmail(String email) {
         return clientRepository.findByEmail(email)
