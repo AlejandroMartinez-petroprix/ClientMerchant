@@ -6,10 +6,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Feign client interface for interacting with the Merchant microservice.
+ */
 @FeignClient(name = "merchant-microservice", url = "${merchant.service.url}")
 public interface MerchantFeignClient {
-    /*
-        * EP para LLamar al controlador de merchants por ID
+
+    /**
+     * Endpoint to call the Merchant controller by ID.
+     *
+     * @param merchantId The ID of the merchant.
+     * @param simpleOutput Whether to return a simplified output.
+     * @return The merchant object.
      */
     @GetMapping("/merchants/{id}")
     Object findById(@PathVariable("id") String merchantId, @RequestParam(required = false) boolean simpleOutput);

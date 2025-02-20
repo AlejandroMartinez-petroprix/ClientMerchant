@@ -16,12 +16,17 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Configuration class for Swagger.
+ */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
 
-    /*
-        * Configuración de Swagger
+    /**
+     * Creates a Docket bean to configure Swagger.
+     *
+     * @return a Docket configured for the Client Microservice API.
      */
     @Bean
     public Docket api() {
@@ -39,15 +44,19 @@ public class SwaggerConfig {
                 .securityContexts(Collections.singletonList(securityContext()));
     }
 
-    /*
-        * Configuración de la cabecera de la API
+    /**
+     * Configures the API key for Swagger.
+     *
+     * @return an ApiKey object with the JWT configuration.
      */
     private ApiKey apiKey() {
         return new ApiKey("JWT", "Authorization", "header");
     }
 
-    /*
-        * Que EP van a estar protegidos por la seguridad de la API
+    /**
+     * Configures the security context for Swagger.
+     *
+     * @return a SecurityContext object with the security configuration.
      */
     private SecurityContext securityContext() {
         return SecurityContext.builder()
@@ -56,8 +65,10 @@ public class SwaggerConfig {
                 .build();
     }
 
-    /*
-        * Configuración del scope de la API
+    /**
+     * Configures the default authorization for Swagger.
+     *
+     * @return a list of SecurityReference objects with the default authorization configuration.
      */
     private List<SecurityReference> defaultAuth() {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");

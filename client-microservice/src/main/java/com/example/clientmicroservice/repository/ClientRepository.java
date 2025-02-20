@@ -22,6 +22,12 @@ public class ClientRepository {
 
     private final DynamoDbTable<Client> clientTable;
 
+    /**
+     * Creates a new Client in DynamoDB.
+     *
+     * @param client The Client entity to be created.
+     * @return The created Client entity.
+     */
     public Client create(Client client) {
         client.setId(java.util.UUID.randomUUID().toString());
         try {
@@ -33,6 +39,12 @@ public class ClientRepository {
         return client;
     }
 
+    /**
+     * Finds a Client by its ID in DynamoDB.
+     *
+     * @param id The ID of the Client to be found.
+     * @return An Optional containing the found Client, or empty if not found.
+     */
     public Optional<Client> findById(String id) {
         log.info("Buscando al cliente con ID: {} en DynamoDB...", id);
 
@@ -40,6 +52,12 @@ public class ClientRepository {
                 .sortValue(Client.CLIENT_SK_PREFIX))));
     }
 
+    /**
+     * Finds Clients by their name in DynamoDB.
+     *
+     * @param name The name of the Clients to be found.
+     * @return A list of Clients matching the given name.
+     */
     public List<Client> findByName(String name) {
         log.info("Buscando clientes por nombre: {} en DynamoDB...", name);
 
@@ -49,7 +67,12 @@ public class ClientRepository {
                 .collect(Collectors.toList());
     }
 
-
+    /**
+     * Finds a Client by its email in DynamoDB using a Global Secondary Index (GSI).
+     *
+     * @param email The email of the Client to be found.
+     * @return An Optional containing the found Client, or empty if not found.
+     */
     public Optional<Client> findByEmail(String email) {
         log.info("Buscando cliente con email: {} en GSI1...", email);
 
@@ -70,7 +93,11 @@ public class ClientRepository {
         }
     }
 
-
+    /**
+     * Updates an existing Client in DynamoDB.
+     *
+     * @param client The Client entity to be updated.
+     */
     public void update(Client client) {
         log.info("Actualizando cliente con ID: {} en DynamoDB...", client.getId());
         clientTable.putItem(client);

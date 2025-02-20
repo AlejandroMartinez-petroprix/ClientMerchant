@@ -11,14 +11,23 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+/**
+ * Service class for managing merchants.
+ */
 @Service
 @RequiredArgsConstructor
 public class MerchantService {
     private final MerchantRepository merchantRepository;
     private final MerchantMapper merchantMapper;
 
-
+    /**
+     * Creates a new merchant.
+     *
+     * @param merchantInputDTO the merchant input data transfer object
+     * @return the created merchant output data transfer object
+     * @throws IllegalStateException if a merchant with the same name already exists for the client
+     * @throws RuntimeException if there is an error creating the merchant
+     */
     public MerchantOutputDTO createMerchant(MerchantInputDTO merchantInputDTO) {
         List<Merchant> existingMerchants = merchantRepository.findByClientId(merchantInputDTO.getClientId());
         boolean exists = existingMerchants.stream()
@@ -39,6 +48,14 @@ public class MerchantService {
         }
     }
 
+    /**
+     * Finds a merchant by its ID.
+     *
+     * @param id the ID of the merchant
+     * @param simpleOutput whether to return a simplified output
+     * @return the found merchant output data transfer object
+     * @throws IllegalArgumentException if the merchant is not found
+     */
     public MerchantOutputDTO findById(String id, boolean simpleOutput) {
         Merchant merchant = merchantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Merchant con ID " + id + " no encontrado."));
@@ -47,13 +64,26 @@ public class MerchantService {
                 : merchantMapper.toDto(merchant);
     }
 
-
+    /**
+     * Finds merchants by their name.
+     *
+     * @param name the name of the merchants to find
+     * @return a list of found merchant output data transfer objects
+     */
     public List<MerchantOutputDTO> findByName(String name) {
         return merchantRepository.findByName(name).stream()
                 .map(merchantMapper::toDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Updates an existing merchant.
+     *
+     * @param id the ID of the merchant to update
+     * @param merchantInputDTO the merchant input data transfer object
+     * @return the updated merchant output data transfer object
+     * @throws RuntimeException if the merchant is not found
+     */
     public MerchantOutputDTO updateMerchant(String id, MerchantInputDTO merchantInputDTO) {
         Merchant merchant = merchantRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Merchant not found"));
@@ -64,11 +94,26 @@ public class MerchantService {
         merchantRepository.update(merchant);
         return merchantMapper.toDto(merchant);
     }
+
+    /**
+     * Finds merchants by their client ID.
+     *
+     * @param clientId the client ID of the merchants to find
+     * @return a list of found merchant output data transfer objects
+     */
     public List<MerchantOutputDTO> findByClientId(String clientId) {
         return merchantRepository.findByClientId(clientId).stream()
                 .map(merchantMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Finds the client ID by a merchant's ID.
+     *
+     * @param merchantId the ID of the merchant
+     * @return the client ID of the merchant
+     * @throws RuntimeException if the merchant is not found
+     */
     public String findClientByMerchantId(String merchantId) {
         return merchantRepository.findClientByMerchantId(merchantId);
     }

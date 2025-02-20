@@ -18,6 +18,9 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.net.URI;
 
+/**
+ * Configuration class for setting up DynamoDB clients and tables.
+ */
 @Slf4j
 @Configuration
 @EnableConfigurationProperties({AwsProperties.class, AwsCredentials.class})
@@ -25,10 +28,20 @@ public class DynamoDbConfig {
 
     private final AwsProperties awsProperties;
 
+    /**
+     * Constructor for DynamoDbConfig.
+     *
+     * @param awsProperties the AWS properties
+     */
     public DynamoDbConfig(AwsProperties awsProperties) {
         this.awsProperties = awsProperties;
     }
 
+    /**
+     * Creates a DynamoDbClient bean.
+     *
+     * @return the DynamoDbClient
+     */
     @Bean
     public DynamoDbClient dynamoDbClient() {
 
@@ -47,11 +60,23 @@ public class DynamoDbConfig {
         return builder.build();
     }
 
+    /**
+     * Creates a DynamoDbEnhancedClient bean.
+     *
+     * @param dynamoDbClient the DynamoDbClient
+     * @return the DynamoDbEnhancedClient
+     */
     @Bean
     public DynamoDbEnhancedClient dynamoDbEnhancedClient(DynamoDbClient dynamoDbClient) {
         return DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient).build();
     }
 
+    /**
+     * Creates a DynamoDbTable bean for the Merchant entity.
+     *
+     * @param dynamoDbEnhancedClient the DynamoDbEnhancedClient
+     * @return the DynamoDbTable for Merchant
+     */
     @Bean
     public DynamoDbTable<Merchant> clientTable(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
         return dynamoDbEnhancedClient.table(awsProperties.getDynamoDbTableName(), TableSchema.fromBean(Merchant.class));

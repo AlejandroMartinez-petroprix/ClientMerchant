@@ -3,8 +3,8 @@ package com.example.clientmicroservice.model;
 import lombok.Data;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
-/*
-  Tabla única para todos los microservicios
+/**
+ * Represents the main table used across all microservices.
  */
 @Data
 @DynamoDbBean
@@ -38,6 +38,11 @@ public class MainTable {
         return status;
     }
 
+    /**
+     * Gets the secondary partition key for the global secondary index.
+     *
+     * @return the secondary partition key.
+     */
     @DynamoDbAttribute("gIndex2Pk")
     @DynamoDbSecondaryPartitionKey(indexNames = "GSI1")
     public String getGIndex2Pk() {

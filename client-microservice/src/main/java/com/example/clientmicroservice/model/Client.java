@@ -3,8 +3,8 @@ package com.example.clientmicroservice.model;
 import lombok.*;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
-/*
-   Clase que representa un cliente y que extiende de la tabla principal
+/**
+ * Class representing a client that extends from the main table.
  */
 @DynamoDbBean
 @EqualsAndHashCode(callSuper = true)
@@ -31,9 +31,14 @@ public class Client extends MainTable {
         return getPartitionKey().substring(CLIENT_PK_PREFIX.length());
     }
 
+    /**
+     * Sets the email of the client and indexes it in GSI1.
+     *
+     * @param email The email to be set.
+     */
     public void setEmail(String email) {
         this.email = email;
-        setGIndex2Pk(email); // Guardar email en gIndex2Pk para que se indexe en GSI1
+        setGIndex2Pk(email);
     }
 
 }

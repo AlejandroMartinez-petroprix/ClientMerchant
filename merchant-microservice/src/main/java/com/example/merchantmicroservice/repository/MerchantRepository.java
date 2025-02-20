@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Repository for managing Merchant entities in DynamoDB.
+ */
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -22,6 +25,14 @@ public class MerchantRepository {
 
     private final DynamoDbTable<Merchant> merchantTable;
 
+    /**
+     * Creates a new Merchant in DynamoDB.
+     *
+     * @param merchant the Merchant entity to be created
+     * @return the created Merchant entity
+     * @throws IllegalStateException if a Merchant with the same ID already exists
+     * @throws RuntimeException if the Merchant could not be saved in DynamoDB
+     */
     public Merchant create(Merchant merchant) {
         merchant.setId(java.util.UUID.randomUUID().toString());
 
@@ -39,7 +50,12 @@ public class MerchantRepository {
         }
     }
 
-
+    /**
+     * Finds a Merchant by its ID.
+     *
+     * @param id the ID of the Merchant
+     * @return an Optional containing the found Merchant, or empty if not found
+     */
     public Optional<Merchant> findById(String id) {
         Merchant merchant = merchantTable.getItem(r -> r.key(k -> k.partitionValue(Merchant.MERCHANT_PK_PREFIX + id)
                 .sortValue(Merchant.MERCHANT_SK_PREFIX)));
@@ -51,13 +67,25 @@ public class MerchantRepository {
         return Optional.of(merchant);
     }
 
-
+    /**
+     * Finds Merchants by their name.
+     *
+     * @param name the name of the Merchants to find
+     * @return a list of Merchants with the given name
+     */
     public List<Merchant> findByName(String name) {
         log.info("Buscando merchants por nombre: {} en DynamoDB...", name);
         return merchantTable.scan().items().stream()
                 .filter(m -> m.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Updates an existing Merchant in DynamoDB.
+     *
+     * @param merchant the Merchant entity to update
+     * @throws IllegalStateException if the Merchant does not exist
+     */
     public void update(Merchant merchant) {
         if (!findById(merchant.getId()).isPresent()) {
             throw new IllegalStateException("No se puede actualizar: Merchant con ID " + merchant.getId() + " no existe.");
@@ -67,6 +95,13 @@ public class MerchantRepository {
         log.info("Merchant actualizado correctamente.");
     }
 
+    /**
+     * Finds Merchants by their client ID.
+     *
+     * @param clientId the client ID of the Merchants to find
+     * @return a list of Merchants with the given client ID
+     * @throws RuntimeException if there is an error querying the GSI1 index
+     */
     public List<Merchant> findByClientId(String clientId) {
         try {
             DynamoDbIndex<Merchant> gsi = merchantTable.index("GSI1");
@@ -84,6 +119,13 @@ public class MerchantRepository {
         }
     }
 
+    /**
+     * Finds the client ID by a Merchant's ID.
+     *
+     * @param merchantId the ID of the Merchant
+     * @return the client ID of the Merchant
+     * @throws RuntimeException if the Merchant is not found
+     */
     public String findClientByMerchantId(String merchantId) {
         Optional<Merchant> merchantOpt = findById(merchantId);
         if (merchantOpt.isPresent()) {
@@ -91,7 +133,4 @@ public class MerchantRepository {
         }
         throw new RuntimeException("Merchant no encontrado");
     }
-
-
 }
-

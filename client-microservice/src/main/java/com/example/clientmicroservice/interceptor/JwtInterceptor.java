@@ -11,8 +11,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/*
-    Interceptor que verifica si el usuario es mayor de 18 años, basado en el token JWT.
+/**
+ * Interceptor that verifies if the user is over 18 years old, based on the JWT token.
  */
 @Component
 @Slf4j
@@ -20,6 +20,15 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     private static final String SECRET_KEY = "a-string-secret-at-least-256-bits-long";
 
+    /**
+     * Pre-handle method to intercept the request and check the user's age from the JWT token.
+     *
+     * @param request  The HTTP request.
+     * @param response The HTTP response.
+     * @param handler  The handler.
+     * @return true if the user is over 18 years old, false otherwise.
+     * @throws Exception if an error occurs during token verification.
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info("Intercepting request to check if user is over 18 years old");

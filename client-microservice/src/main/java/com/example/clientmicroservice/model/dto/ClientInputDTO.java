@@ -6,8 +6,8 @@ import javax.validation.constraints.Email;
 
 import javax.validation.constraints.*;
 
-/*
- * DTO para la entrada de datos de un cliente
+/**
+ * DTO for client input data.
  */
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor

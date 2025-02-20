@@ -20,17 +20,22 @@ public class ClientController {
     private final ClientService clientService;
 
     /**
-     * Endpoint para crear un cliente
+     * Endpoint to create a client.
+     *
+     * @param clientInputDTO The DTO containing client input data.
+     * @return The created client as a ResponseEntity.
      */
     @PostMapping
     public ResponseEntity<?> createClient(@Valid @RequestBody ClientInputDTO clientInputDTO) {
         return ResponseEntity.ok(clientService.createClient(clientInputDTO));
     }
 
-
-
     /**
-     * Endpoint para obtener un cliente por ID con opción de simpleOutput
+     * Endpoint to get a client by ID with an option for simple output.
+     *
+     * @param id The ID of the client.
+     * @param simpleOutput Whether to return a simplified output.
+     * @return The client as a ResponseEntity.
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getClientById(@Valid @PathVariable String id, @RequestParam(required = false) boolean simpleOutput) {
@@ -38,7 +43,10 @@ public class ClientController {
     }
 
     /**
-     * Endpoint para buscar clientes por nombre
+     * Endpoint to search for clients by name.
+     *
+     * @param name The name of the clients to be found.
+     * @return A list of clients as a ResponseEntity.
      */
     @GetMapping("/search/by-name")
     public ResponseEntity<List<ClientOutputDTO>> findByName(@Valid @RequestParam String name) {
@@ -46,7 +54,10 @@ public class ClientController {
     }
 
     /**
-     * Endpoint para buscar clientes por email
+     * Endpoint to search for clients by email.
+     *
+     * @param email The email of the client to be found.
+     * @return The client as a ResponseEntity.
      */
     @GetMapping("/search/by-email")
     public ResponseEntity<ClientOutputDTO> findByEmail(@Valid @RequestParam String email) {
@@ -54,7 +65,11 @@ public class ClientController {
     }
 
     /**
-     * Endpoint para actualizar un cliente
+     * Endpoint to update a client.
+     *
+     * @param id The ID of the client to be updated.
+     * @param clientInputDTO The DTO containing updated client data.
+     * @return The updated client as a ResponseEntity.
      */
     @PutMapping("/{id}")
     public ResponseEntity<ClientOutputDTO> updateClient(@Valid @PathVariable String id, @RequestBody ClientInputDTO clientInputDTO) {
@@ -62,7 +77,10 @@ public class ClientController {
     }
 
     /**
-     * Endpoint para verificar si un merchant existe
+     * Endpoint to check if a merchant exists.
+     *
+     * @param merchantId The ID of the merchant.
+     * @return true if the merchant exists, false otherwise.
      */
     @GetMapping("/merchant/{merchantId}/exists")
     public ResponseEntity<Boolean> checkMerchantExists(@Valid @PathVariable String merchantId) {

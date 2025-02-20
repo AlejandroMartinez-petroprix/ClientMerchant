@@ -5,10 +5,11 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+/**
+ * DTO for merchant output data.
+ */
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 @Builder
 public class MerchantOutputDTO {
 

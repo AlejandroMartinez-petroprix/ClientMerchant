@@ -5,12 +5,13 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttri
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
 
+/**
+ * Represents a Merchant entity in the DynamoDB table.
+ */
 @DynamoDbBean
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@NoArgsConstructor @AllArgsConstructor
+@Getter @Setter
 @Builder
 @ToString
 public class Merchant extends MainTable {
@@ -36,6 +37,12 @@ public class Merchant extends MainTable {
         return clientId;
     }
 
+    /**
+     * Sets the client ID.
+     * This method sets the client ID and the secondary partition key for the DynamoDB table.
+     *
+     * @param clientId the client ID
+     */
     public void setClientId(String clientId) {
         this.clientId = clientId;
         setGIndex2Pk(clientId);

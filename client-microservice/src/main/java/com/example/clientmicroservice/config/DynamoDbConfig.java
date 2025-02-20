@@ -18,8 +18,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.net.URI;
 
-/*
-    Configuración de DynamoDB
+/**
+ * Configuration class for DynamoDB.
  */
 @Slf4j
 @Configuration
@@ -32,8 +32,10 @@ public class DynamoDbConfig {
         this.awsProperties = awsProperties;
     }
 
-    /*
-         Creación del cliente de DynamoDB a partir de las propiedades de AWS
+    /**
+     * Creates a DynamoDbClient bean using AWS properties.
+     *
+     * @return a configured DynamoDbClient.
      */
     @Bean
     public DynamoDbClient dynamoDbClient() {
@@ -46,23 +48,29 @@ public class DynamoDbConfig {
                 ));
 
         if (awsProperties.getEndpointOverride() != null) {
-            log.info("Usando endpoint override: {}", awsProperties.getEndpointOverride());
+            log.info("Using endpoint override: {}", awsProperties.getEndpointOverride());
             builder.endpointOverride(URI.create(awsProperties.getEndpointOverride()));
         }
 
         return builder.build();
     }
 
-    /*
-        Cliente de DynamoDB mejorado
+    /**
+     * Creates a DynamoDbEnhancedClient bean.
+     *
+     * @param dynamoDbClient The DynamoDbClient to be used.
+     * @return a configured DynamoDbEnhancedClient.
      */
     @Bean
     public DynamoDbEnhancedClient dynamoDbEnhancedClient(DynamoDbClient dynamoDbClient) {
         return DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient).build();
     }
 
-    /*
-        Tabla de DynamoDB principal
+    /**
+     * Creates a DynamoDbTable bean for the Client model.
+     *
+     * @param dynamoDbEnhancedClient The DynamoDbEnhancedClient to be used.
+     * @return a configured DynamoDbTable for the Client model.
      */
     @Bean
     public DynamoDbTable<Client> clientTable(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
