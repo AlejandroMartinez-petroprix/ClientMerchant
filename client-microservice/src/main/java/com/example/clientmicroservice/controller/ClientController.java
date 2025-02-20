@@ -1,5 +1,6 @@
 package com.example.clientmicroservice.controller;
 
+import com.example.clientmicroservice.model.Client;
 import com.example.clientmicroservice.model.dto.ClientInputDTO;
 import com.example.clientmicroservice.model.dto.ClientOutputDTO;
 import com.example.clientmicroservice.service.ClientService;
@@ -28,16 +29,11 @@ public class ClientController {
      * Endpoint para crear un cliente
      */
     @PostMapping
-    public ResponseEntity<?> createClient(@Valid HttpServletRequest request) throws IOException {
-        HttpServletRequest wrappedRequest = (HttpServletRequest) request.getAttribute("wrappedRequest");
-
-        ClientInputDTO clientInputDTO = null;
-        if (wrappedRequest != null) {
-            clientInputDTO = objectMapper.readValue(wrappedRequest.getInputStream(), ClientInputDTO.class);
-        }
-
+    public ResponseEntity<?> createClient(@Valid @RequestBody ClientInputDTO clientInputDTO) {
         return ResponseEntity.ok(clientService.createClient(clientInputDTO));
     }
+
+
 
     /**
      * Endpoint para obtener un cliente por ID con opción de simpleOutput
