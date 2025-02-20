@@ -86,13 +86,10 @@ public class MerchantRepository {
 
     public String findClientByMerchantId(String merchantId) {
         Optional<Merchant> merchantOpt = findById(merchantId);
-
-        if (!merchantOpt.isPresent()) {
-            log.warn("No se encontró un merchant con ID {}.", merchantId);
-            return null;
+        if (merchantOpt.isPresent()) {
+            return merchantOpt.get().getClientId();
         }
-
-        return merchantOpt.get().getClientId();
+        throw new RuntimeException("Merchant no encontrado");
     }
 
 
