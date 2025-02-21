@@ -76,6 +76,7 @@ public class MerchantRepository {
     public List<Merchant> findByName(String name) {
         log.info("Buscando merchants por nombre: {} en DynamoDB...", name);
         return merchantTable.scan().items().stream()
+                .filter(m -> m.getPartitionKey().startsWith("MERCHANT#"))
                 .filter(m -> m.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
     }

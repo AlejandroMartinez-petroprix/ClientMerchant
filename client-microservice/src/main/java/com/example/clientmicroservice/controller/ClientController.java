@@ -1,5 +1,6 @@
 package com.example.clientmicroservice.controller;
 
+import com.example.clientmicroservice.mappers.ClientMapper;
 import com.example.clientmicroservice.model.dto.ClientInputDTO;
 import com.example.clientmicroservice.model.dto.ClientOutputDTO;
 import com.example.clientmicroservice.service.ClientService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/clients")
@@ -18,6 +20,8 @@ import java.util.List;
 @Slf4j
 public class ClientController {
     private final ClientService clientService;
+    private final ClientMapper clientMapper;
+
 
     /**
      * Endpoint to create a client.
@@ -26,8 +30,8 @@ public class ClientController {
      * @return The created client as a ResponseEntity.
      */
     @PostMapping
-    public ResponseEntity<?> createClient(@Valid @RequestBody ClientInputDTO clientInputDTO) {
-        return ResponseEntity.ok(clientService.createClient(clientInputDTO));
+    public ResponseEntity<ClientOutputDTO> createClient(@Valid @RequestBody ClientInputDTO clientInputDTO) {
+        return ResponseEntity.ok(clientMapper.toDto(clientService.createClient(clientInputDTO)));
     }
 
     /**
@@ -38,8 +42,9 @@ public class ClientController {
      * @return The client as a ResponseEntity.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getClientById(@Valid @PathVariable String id, @RequestParam(required = false) boolean simpleOutput) {
-        return ResponseEntity.ok(clientService.getClientById(id, simpleOutput));
+    public ResponseEntity<ClientOutputDTO> getClientById(@Valid @PathVariable String id, @RequestParam(required = false) boolean simpleOutput) {
+
+        return ResponseEntity.ok(clientMapper.toDto(clientService.getClientById(id, simpleOutput)));
     }
 
     /**
@@ -50,7 +55,9 @@ public class ClientController {
      */
     @GetMapping("/search/by-name")
     public ResponseEntity<List<ClientOutputDTO>> findByName(@Valid @RequestParam String name) {
-        return ResponseEntity.ok(clientService.findByName(name));
+        return ResponseEntity.ok(clientService.findByName(name).stream()
+                .map(clientMapper::toDto)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -61,7 +68,7 @@ public class ClientController {
      */
     @GetMapping("/search/by-email")
     public ResponseEntity<ClientOutputDTO> findByEmail(@Valid @RequestParam String email) {
-        return ResponseEntity.ok(clientService.findByEmail(email));
+        return ResponseEntity.ok(clientMapper.toDto((clientService.findByEmail(email))));
     }
 
     /**
@@ -73,7 +80,7 @@ public class ClientController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ClientOutputDTO> updateClient(@Valid @PathVariable String id, @RequestBody ClientInputDTO clientInputDTO) {
-        return ResponseEntity.ok(clientService.updateClient(id, clientInputDTO));
+        return ResponseEntity.ok(clientMapper.toDto(clientService.updateClient(id, clientInputDTO)));
     }
 
     /**
@@ -83,7 +90,7 @@ public class ClientController {
      * @return true if the merchant exists, false otherwise.
      */
     @GetMapping("/merchant/{merchantId}/exists")
-    public ResponseEntity<Boolean> checkMerchantExists(@Valid @PathVariable String merchantId) {
+    public ResponseEntity<Boolean> checkMerchantExists(@RequestParam String merchantId) {
         return ResponseEntity.ok(clientService.doesMerchantExist(merchantId));
     }
 

@@ -28,7 +28,7 @@ public class MerchantService {
      * @throws IllegalStateException if a merchant with the same name already exists for the client
      * @throws RuntimeException if there is an error creating the merchant
      */
-    public MerchantOutputDTO createMerchant(MerchantInputDTO merchantInputDTO) {
+    public Merchant createMerchant(MerchantInputDTO merchantInputDTO) {
         List<Merchant> existingMerchants = merchantRepository.findByClientId(merchantInputDTO.getClientId());
         boolean exists = existingMerchants.stream()
                 .anyMatch(m -> m.getName().equalsIgnoreCase(merchantInputDTO.getName()));
@@ -42,7 +42,7 @@ public class MerchantService {
 
         try {
             merchantRepository.create(merchant);
-            return merchantMapper.toDto(merchant);
+            return merchant;
         } catch (Exception e) {
             throw new RuntimeException("Error al crear el merchant: " + e.getMessage(), e);
         }
@@ -56,12 +56,17 @@ public class MerchantService {
      * @return the found merchant output data transfer object
      * @throws IllegalArgumentException if the merchant is not found
      */
-    public MerchantOutputDTO findById(String id, boolean simpleOutput) {
+    public Merchant findById(String id, boolean simpleOutput) {
         Merchant merchant = merchantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Merchant con ID " + id + " no encontrado."));
 
-        return simpleOutput ? new MerchantOutputDTO(merchant.getId(), null, null, null, null)
-                : merchantMapper.toDto(merchant);
+        if(simpleOutput){
+            Merchant simpleMerchant = new Merchant();
+            simpleMerchant.setId(merchant.getId());
+            return simpleMerchant;
+        } else {
+            return merchant;
+        }
     }
 
     /**
@@ -70,9 +75,8 @@ public class MerchantService {
      * @param name the name of the merchants to find
      * @return a list of found merchant output data transfer objects
      */
-    public List<MerchantOutputDTO> findByName(String name) {
+    public List<Merchant> findByName(String name) {
         return merchantRepository.findByName(name).stream()
-                .map(merchantMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -84,7 +88,7 @@ public class MerchantService {
      * @return the updated merchant output data transfer object
      * @throws RuntimeException if the merchant is not found
      */
-    public MerchantOutputDTO updateMerchant(String id, MerchantInputDTO merchantInputDTO) {
+    public Merchant updateMerchant(String id, MerchantInputDTO merchantInputDTO) {
         Merchant merchant = merchantRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Merchant not found"));
 
@@ -92,7 +96,7 @@ public class MerchantService {
         merchant.setAddress(merchantInputDTO.getAddress());
         merchant.setMerchantType(merchantInputDTO.getMerchantType());
         merchantRepository.update(merchant);
-        return merchantMapper.toDto(merchant);
+        return merchant;
     }
 
     /**
@@ -101,9 +105,8 @@ public class MerchantService {
      * @param clientId the client ID of the merchants to find
      * @return a list of found merchant output data transfer objects
      */
-    public List<MerchantOutputDTO> findByClientId(String clientId) {
+    public List<Merchant> findByClientId(String clientId) {
         return merchantRepository.findByClientId(clientId).stream()
-                .map(merchantMapper::toDto)
                 .collect(Collectors.toList());
     }
 

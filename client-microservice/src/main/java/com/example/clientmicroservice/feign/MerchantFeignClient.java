@@ -16,9 +16,8 @@ public interface MerchantFeignClient {
      * Endpoint to call the Merchant controller by ID.
      *
      * @param merchantId The ID of the merchant.
-     * @param simpleOutput Whether to return a simplified output.
      * @return The merchant object.
      */
     @GetMapping("/merchants/{id}")
-    Object findById(@PathVariable("id") String merchantId, @RequestParam(required = false) boolean simpleOutput);
+    Object findById(@PathVariable("id") String merchantId);
 }

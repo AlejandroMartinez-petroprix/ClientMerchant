@@ -24,12 +24,12 @@ public class ClientService {
      * Creates a new Client.
      *
      * @param clientInputDTO The DTO containing client input data.
-     * @return The created Client as a DTO.
+     * @return The created Client
      */
-    public ClientOutputDTO createClient(ClientInputDTO clientInputDTO) {
+    public Client createClient(ClientInputDTO clientInputDTO) {
         Client client = clientMapper.toEntity(clientInputDTO);
         clientRepository.create(client);
-        return clientMapper.toDto(client);
+        return client;
     }
 
     /**
@@ -40,11 +40,16 @@ public class ClientService {
      * @return The Client as a DTO.
      * @throws RuntimeException if the Client is not found.
      */
-    public ClientOutputDTO getClientById(String id, boolean simpleOutput) {
+    public Client getClientById(String id, boolean simpleOutput) {
         Optional<Client> clientOpt = clientRepository.findById(id);
         if (clientOpt.isPresent()) {
             Client client = clientOpt.get();
-            return simpleOutput ? new ClientOutputDTO(client.getId(), null, null, null,null) : clientMapper.toDto(client);
+            if (simpleOutput) {
+                Client simpleClient = new Client();
+                simpleClient.setId(client.getId());
+                return simpleClient;
+            } else
+                return client;
         }
         throw new RuntimeException("Client not found");
     }
@@ -56,14 +61,13 @@ public class ClientService {
      * @return A list of Clients as DTOs.
      * @throws RuntimeException if no Clients are found.
      */
-    public List<ClientOutputDTO> findByName(String name) {
+    public List<Client> findByName(String name) {
         List<Client> clients = clientRepository.findByName(name);
 
         if (clients.isEmpty()) {
             throw new RuntimeException("Client or clients not found");        }
 
         return clients.stream()
-                .map(clientMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -74,9 +78,8 @@ public class ClientService {
      * @return The Client as a DTO.
      * @throws RuntimeException if the Client is not found.
      */
-    public ClientOutputDTO findByEmail(String email) {
+    public Client findByEmail(String email) {
         return clientRepository.findByEmail(email)
-                .map(clientMapper::toDto)
                 .orElseThrow(() -> new RuntimeException("Client not found"));
     }
 
@@ -88,7 +91,7 @@ public class ClientService {
      * @return The updated Client as a DTO.
      * @throws RuntimeException if the Client is not found.
      */
-    public ClientOutputDTO updateClient(String id, ClientInputDTO clientInputDTO) {
+    public Client updateClient(String id, ClientInputDTO clientInputDTO) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client not found"));
 
@@ -97,7 +100,7 @@ public class ClientService {
         client.setPhone(clientInputDTO.getPhone());
 
         clientRepository.update(client);
-        return clientMapper.toDto(client);
+        return client;
     }
 
     /**
@@ -108,7 +111,7 @@ public class ClientService {
      */
     public boolean doesMerchantExist(String merchantId) {
         try {
-            merchantClient.findById(merchantId, true);
+            merchantClient.findById(merchantId);
             return true;
         } catch (Exception e) {
             return false;
