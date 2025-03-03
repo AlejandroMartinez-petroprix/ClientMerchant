@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Interceptor that verifies if the user is over 18 years old, based on the JWT token.
  */
+/*
 @Component
 @Slf4j
 public class JwtInterceptor implements HandlerInterceptor {
@@ -28,7 +29,7 @@ public class JwtInterceptor implements HandlerInterceptor {
      * @param handler  The handler.
      * @return true if the user is over 18 years old, false otherwise.
      * @throws Exception if an error occurs during token verification.
-     */
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.info("Intercepting request to check if user is over 18 years old");
@@ -54,3 +55,4 @@ public class JwtInterceptor implements HandlerInterceptor {
         return true;
     }
 }
+*/

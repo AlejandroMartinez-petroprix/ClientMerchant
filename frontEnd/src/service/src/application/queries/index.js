@@ -1,7 +1,7 @@
-import exampleUseCases from './lib/example'
+import clientsUseCases from './lib/clients';
 
 const queries = {
-  ...exampleUseCases
+  ...clientsUseCases,
 };
 
 export default queries;

@@ -23,7 +23,6 @@ const manageRequest = async (
   requestString,
   params = {},
   mode = 'normal',
-  responseType = 'normal',
   method = 'get',
   token,
   cache = 'no-store',

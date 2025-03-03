@@ -2,18 +2,17 @@
  * Librería de todos los errores, queries y métodos de gestión de datos de las llamadas a API
  * *****************************************************************************************/
 
-import { EXAMPLE_METHODS } from "./methods/example-methods";
-import { EXAMPLE_ERROR_MESSAGES, EXAMPLE_QUERIES } from "./queries/example-queries";
+import { CLIENTS_METHODS } from "./methods/clients-methods";
+import { CLIENTS_QUERIES, CLIENTS_ERROR_MESSAGES } from "./queries/clients-queries";
 
 export const ERROR_MESSAGES = {
-  ...EXAMPLE_ERROR_MESSAGES,
+  ...CLIENTS_ERROR_MESSAGES,
 };
 
 export const QUERIES = {
-  ...EXAMPLE_QUERIES,
+  ...CLIENTS_QUERIES,
 };
 
 export const METHODS = {
-  
-  ...EXAMPLE_METHODS,
+  ...CLIENTS_METHODS,
 };
