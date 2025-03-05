@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Input, message } from "antd";
-import clientsUseCases from "@/service/src/application/queries/lib/clients";
+import  clientsUseCases  from "@/service/src/application/queries/lib/clients";
 import { Client } from "../interface";
 
 interface ClientFormProps {
@@ -14,9 +14,29 @@ interface ClientFormProps {
 export function ClientForm({ isOpen, onClose, clientData }: ClientFormProps) {
   const isEditing = Boolean(clientData);
 
-  const [formData, setFormData] = useState<Client>(
-    clientData || { cifNifNie: "", name: "", surname: "", phone: "", email: "" }
-  );
+  const [formData, setFormData] = useState<Client>({
+    id: "",
+    cifNifNie: "",
+    name: "",
+    surname: "",
+    phone: "",
+    email: "",
+  });
+
+  useEffect(() => {
+    if (clientData) {
+      setFormData(clientData);
+    } else {
+      setFormData({
+        id: "",
+        cifNifNie: "",
+        name: "",
+        surname: "",
+        phone: "",
+        email: "",
+      });
+    }
+  }, [clientData, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -44,7 +64,13 @@ export function ClientForm({ isOpen, onClose, clientData }: ClientFormProps) {
   return (
     <Modal open={isOpen} onCancel={onClose} onOk={handleSubmit} title={isEditing ? "Editar Cliente" : "Nuevo Cliente"}>
       <div className="grid gap-4">
-        <Input name="cifNifNie" placeholder="CIF/NIF/NIE" value={formData.cifNifNie} onChange={handleChange} />
+        <Input
+          name="cifNifNie"
+          placeholder="CIF/NIF/NIE"
+          value={formData.cifNifNie}
+          onChange={handleChange}
+          disabled={isEditing}
+        />
         <Input name="name" placeholder="Nombre" value={formData.name} onChange={handleChange} />
         <Input name="surname" placeholder="Apellido" value={formData.surname} onChange={handleChange} />
         <Input name="phone" placeholder="Teléfono" value={formData.phone} onChange={handleChange} />
