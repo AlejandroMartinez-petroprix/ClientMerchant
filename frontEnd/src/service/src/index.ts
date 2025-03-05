@@ -1,31 +1,31 @@
-import useCases from "./application";
+import useCases from './application';
 
 const useCasesJson = useCases as Utility.JSONValue;
 
 /**
- * @description Ejecuta un caso de uso de la aplicación.
- * @param useCaseName - Nombre del caso de uso.
- * @param parameters - Parámetros del caso de uso.
+ * @description Capa de Service, donde se sirven distintas funcionalidades que pueden no estar relacionadas con la capa de application
  */
-const executeUseCase = (useCaseName: string, parameters: Utility.JSONValue) => 
-  new Promise((resolve, reject) => {
-    try {
-      if (!useCasesJson || !useCasesJson[useCaseName]) {
-        throw new Error(`UseCase "${useCaseName}" no está definido en Service.`);
-      }
-
-      const { signal, endPointData, token } = parameters;
-      useCasesJson[useCaseName](signal, endPointData, token)
-        .then((response: unknown) => resolve(response))
-        .catch((error: unknown) => reject(error));
-    } catch (error) {
-      console.error("Error en Service.executeUseCase:", error);
-      reject(error);
-    }
-  });
 
 const Service = {
-  executeUseCase,
+  /**
+   * @description Esta función ejecuta los useCases de la aplicación
+   * @param useCaseName   - nombre del useCase
+   * @param parameters  - parámetros del useCase
+   * @returns
+   */
+  useCases: (useCaseName: string, parameters: Utility.JSONValue) =>
+    new Promise((resolve, reject) => {
+      try {
+        const { signal, endPointData, token } = parameters;
+        useCasesJson[useCaseName](signal, endPointData, token)
+          .then((response: unknown) => resolve(response))
+          .catch((error: unknown) => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    }),
 };
 
 export default Service;

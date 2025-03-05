@@ -15,8 +15,91 @@ const searchClientsByName = (signal, name, token) => {
   );
 };
 
+const createClient = async (signal, clientData,token) => {
+
+  return manageRequest(
+    signal,
+    "createClient",
+    clientData,
+    "body",
+    "post",
+    token,
+    "no-store",
+    { "Content-Type": "application/json" },
+    true,
+    {}
+  );
+};
+
+const getClientById = async (signal, id,token) => {
+  return manageRequest(
+    signal,
+    "getClientById",
+    {},
+    "normal",
+    "get",
+    token,
+    "no-store",
+    {},
+    true,
+    { id }
+  );
+};
+
+const findByEmail = async (signal, email,token) => {
+  return manageRequest(
+    signal,
+    "findByEmail",
+    {},
+    "normal",
+    "get",
+    token,
+    "no-store",
+    {},
+    true,
+    { email }
+  );
+};
+
+const updateClient = async (signal, id, clientData,token) => {
+  return manageRequest(
+    signal,
+    "updateClient",
+    clientData,
+    "body",
+    "put",
+    token,
+    "no-store",
+    { "Content-Type": "application/json" },
+    true,
+    { id }
+  );
+};
+
+const getAllClients = async (signal,token) => {
+  return manageRequest(
+    signal,
+    "getAllClients",
+    {},
+    "normal",
+    "get",
+    token,
+    "no-store",
+    {},
+    true,
+    {}
+  );
+};
+
+
+
 const clientsUseCases = {
-  searchClientsByName
+  searchClientsByName,
+  createClient,
+  getClientById,
+  findByEmail,
+  updateClient,
+  getAllClients
 };
 
 export default clientsUseCases;
