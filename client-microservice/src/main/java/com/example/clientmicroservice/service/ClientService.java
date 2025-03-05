@@ -9,6 +9,7 @@ import com.example.clientmicroservice.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,6 +20,15 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
     private final MerchantFeignClient merchantClient;
+
+    /**
+     * Retrieves all Clients.
+     *
+     * @return A list of Clients as DTOs.
+     */
+    public List<Client> getAllClients() {
+        return new ArrayList<>(clientRepository.findAll());
+    }
 
     /**
      * Creates a new Client.

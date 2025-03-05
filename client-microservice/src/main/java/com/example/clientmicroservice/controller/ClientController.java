@@ -23,7 +23,6 @@ public class ClientController {
     private final ClientService clientService;
     private final ClientMapper clientMapper;
 
-
     /**
      * Endpoint to create a client.
      *
@@ -33,6 +32,18 @@ public class ClientController {
     @PostMapping
     public ResponseEntity<ClientOutputDTO> createClient(@Valid @RequestBody ClientInputDTO clientInputDTO) {
         return ResponseEntity.ok(clientMapper.toDto(clientService.createClient(clientInputDTO)));
+    }
+
+    /**
+     * Endpoint to get all clients.
+     *
+     * @return A list of clients as a ResponseEntity.
+     */
+    @GetMapping("/all")
+    public ResponseEntity<List<ClientOutputDTO>> getAllClients() {
+        return ResponseEntity.ok(clientService.getAllClients().stream()
+                .map(clientMapper::toDto)
+                .collect(Collectors.toList()));
     }
 
     /**

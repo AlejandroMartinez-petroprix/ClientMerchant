@@ -23,6 +23,19 @@ public class ClientRepository {
     private final DynamoDbTable<Client> clientTable;
 
     /**
+     * Retrieves all Clients from DynamoDB.
+     *
+     * @return A list of all Clients.
+     */
+    public List<Client> findAll() {
+        log.info("Buscando todos los clientes en DynamoDB...");
+
+        return clientTable.scan().items().stream()
+                .filter(client -> client.getPartitionKey().startsWith("CLIENT#"))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Creates a new Client in DynamoDB.
      *
      * @param client The Client entity to be created.
