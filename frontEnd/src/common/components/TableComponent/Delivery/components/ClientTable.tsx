@@ -1,9 +1,9 @@
 import { Table } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Client } from "../../ClientComponent/Delivery/interface";
+import { Client } from "../../../ClientComponent/Delivery/interface";
 
 interface ClientTableProps {
-  clients: Client[];  // 🔹 Recibe un array de clientes
+  clients: Client[];
   onEdit: (client: Client) => void;
   onDelete: (id: string) => void;
 }
