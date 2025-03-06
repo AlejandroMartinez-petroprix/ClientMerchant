@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Feign client interface for interacting with the Merchant microservice.
  */
+
 @FeignClient(name = "merchant-microservice", url = "${merchant.service.url}")
 public interface MerchantFeignClient {
 
