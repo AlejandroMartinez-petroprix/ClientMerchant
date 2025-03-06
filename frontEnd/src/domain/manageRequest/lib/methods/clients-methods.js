@@ -5,5 +5,6 @@ export const CLIENTS_METHODS = {
   findByEmail: (response) => response.data,
   updateClient: (response) => response.data,
   getAllClients: (response) => response.data,
+  checkMerchantExists: (response) => response.data,
   
 };

@@ -91,6 +91,21 @@ const getAllClients = async (signal,token) => {
   );
 };
 
+const checkMerchantExists = async (signal, merchantId, token) => {
+  return manageRequest(
+    signal,
+    "checkMerchantExists",
+    {},
+    "normal",
+    "get",
+    token,
+    "no-store",
+    {},
+    true,
+    { merchantId }
+  );
+};
+
 
 
 const clientsUseCases = {
@@ -99,7 +114,8 @@ const clientsUseCases = {
   getClientById,
   findByEmail,
   updateClient,
-  getAllClients
+  getAllClients,
+  checkMerchantExists
 };
 
 export default clientsUseCases;
