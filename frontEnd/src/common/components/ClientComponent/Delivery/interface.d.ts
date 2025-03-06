@@ -1,5 +1,5 @@
 export interface Client {
-    id?: string; 
+    id: string; 
     cifNifNie: string;
     name: string;
     surname: string;
