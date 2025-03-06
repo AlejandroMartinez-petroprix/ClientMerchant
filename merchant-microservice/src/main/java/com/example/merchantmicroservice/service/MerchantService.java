@@ -47,6 +47,13 @@ public class MerchantService {
             throw new RuntimeException("Error al crear el merchant: " + e.getMessage(), e);
         }
     }
+    /**
+     * Finds all merchants.
+     */
+    public List<Merchant> findAll() {
+        return merchantRepository.findAll().stream()
+                .collect(Collectors.toList());
+    }
 
     /**
      * Finds a merchant by its ID.

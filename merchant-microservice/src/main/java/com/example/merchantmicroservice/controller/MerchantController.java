@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 /**
  * REST controller for managing merchants.
  */
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/merchants")
 @RequiredArgsConstructor
@@ -32,6 +33,16 @@ public class MerchantController {
     @PostMapping
     public ResponseEntity<MerchantOutputDTO> createMerchant(@Valid @RequestBody MerchantInputDTO merchantInputDTO) {
         return ResponseEntity.ok(merchantMapper.toDto(merchantService.createMerchant(merchantInputDTO)));
+    }
+
+    /**
+     * Finds all merchants.
+     */
+    @GetMapping("/all")
+    public ResponseEntity<List<MerchantOutputDTO>> findAll() {
+        return ResponseEntity.ok(merchantService.findAll().stream()
+                .map(merchantMapper::toDto)
+                .collect(Collectors.toList()));
     }
 
     /**

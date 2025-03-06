@@ -49,6 +49,15 @@ public class MerchantRepository {
             throw new RuntimeException("No se pudo guardar el merchant en DynamoDB", e);
         }
     }
+    /**
+     * Finds all Merchants in DynamoDB.
+     */
+    public List<Merchant> findAll() {
+        log.info("Buscando todos los merchants en DynamoDB...");
+        return merchantTable.scan().items().stream()
+                .filter(m -> m.getPartitionKey().startsWith("MERCHANT#"))
+                .collect(Collectors.toList());
+    }
 
     /**
      * Finds a Merchant by its ID.
