@@ -16,5 +16,6 @@ public class ClientOutputDTO {
     private String surname;
     private String phone;
     private String email;
+    private String cifNifNie;
 }
 
