@@ -4,8 +4,9 @@ export const CLIENTS_QUERIES = {
   },
   createClient: () => `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients`,
   
-  getClientById: ({ id }) => `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/${id}`, //todo: introduce simpleOutput
-
+  getClientById: ({ id, simpleOutput = false }) => 
+    `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/${id}?simpleOutput=${simpleOutput}`,
+  
   findByEmail: ({ email }) =>
     `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/search/by-email?email=${encodeURIComponent(email)}`,
 
@@ -14,7 +15,7 @@ export const CLIENTS_QUERIES = {
   getAllClients: () => `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/all`,
 
   checkMerchantExists: ({ merchantId }) =>
-    `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/merchant/exists?merchantId=${encodeURIComponent(merchantId)}`,
+    `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/merchant/${merchantId}/exists?merchantId=${encodeURIComponent(merchantId)}`,
   
 };
 
