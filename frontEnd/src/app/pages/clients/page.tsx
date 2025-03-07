@@ -5,9 +5,10 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Button, Tabs, Card } from "antd";
 import { ClientForm } from "@/common/components/ClientComponent/Delivery/components/ClientForm";
 import SearchClientForm from "@/common/components/ClientComponent/Delivery/components/SearchClientForm";
-import ClientTable from "@/common/components/TableComponent/Delivery/components/ClientTable";
+import TableComponent from "@/common/components/TableComponent/Delivery/components/TableComponent";
 import { Client } from "@/common/components/ClientComponent/Delivery/interface";
 import clientsUseCases from "@/service/src/application/queries/lib/clients";
+import  ChecksForm from "@/common/components/ClientComponent/Delivery/components/ChecksForm";
 
 export default function ClientManagement() {
   const [isClientFormOpen, setClientFormOpen] = useState(false);
@@ -53,11 +54,24 @@ export default function ClientManagement() {
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
+  const clientColumns = [
+    { title: "ID", dataIndex: "id", key: "id" },
+    { title: "Nombre", dataIndex: "name", key: "name" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Teléfono", dataIndex: "phone", key: "phone" },
+  ];
+
   const tabItems = [
     {
       key: "all",
       label: "Todos los Clientes",
-      children: <ClientTable clients={clients} onEdit={handleOpenClientForm} onDelete={() => {}} />,
+      children: (
+        <TableComponent
+          data={clients}
+          columns={clientColumns}
+          onEdit={handleOpenClientForm}
+        />
+      ),
     },
     {
       key: "search",
@@ -65,11 +79,24 @@ export default function ClientManagement() {
       children: (
         <Card>
           <SearchClientForm setClients={setSearchResults} updateSearchParams={updateSearchParams} />
-          {searchResults.length > 0 && (
-            <ClientTable clients={searchResults} onEdit={handleOpenClientForm} onDelete={() => {}} />
+          
+          {searchResults.length > 0 ? (
+            <TableComponent
+              data={searchResults}
+              columns={clientColumns}
+              onEdit={handleOpenClientForm}
+            />
+          ) : (
+            <p className="text-center text-gray-500 mt-4">Aquí aparecerán los resultados de las búsquedas</p>
           )}
         </Card>
       ),
+    },
+    
+    {
+      key: "checks",
+      label: "Comprobaciones",
+      children: <ChecksForm />,
     },
   ];
 
