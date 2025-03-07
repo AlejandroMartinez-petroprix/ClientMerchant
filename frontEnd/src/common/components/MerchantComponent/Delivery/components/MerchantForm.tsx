@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Modal, Input, message, Select, Form } from "antd";
 import merchantsUseCases from "@/service/src/application/queries/lib/merchants";
-import { Merchant, MerchantType } from "../../../MerchantComponent/Delivery/interface";
+import { Merchant } from "../interface";
 
 interface MerchantFormProps {
   isOpen: boolean;
@@ -16,31 +16,28 @@ const { Option } = Select;
 const MerchantForm: React.FC<MerchantFormProps> = ({ isOpen, onClose, merchantData }) => {
   const isEditing = Boolean(merchantData);
   const [form] = Form.useForm();
+  const formRef = useRef(form);
+  const [isClient, setIsClient] = useState(false);
 
-  const [formData, setFormData] = useState<Merchant>({
-    id: "",
-    name: "",
-    address: "",
-    merchantType: undefined,
-    clientId: "",
-  });
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (merchantData) {
-      setFormData(merchantData);
-      form.setFieldsValue(merchantData);
+      formRef.current.setFieldsValue(merchantData);
     } else {
-      form.resetFields();
+      formRef.current.resetFields();
     }
-  }, [merchantData, isOpen, form]);
+  }, [merchantData, isOpen]);
 
   const handleSubmit = async () => {
     try {
-      const values = await form.validateFields(); // Validar antes de enviar
+      const values = await form.validateFields();
       const signal = new AbortController().signal;
 
-      if (isEditing && formData.id) {
-        await merchantsUseCases.updateMerchant(signal, formData.id, values);
+      if (isEditing && merchantData?.id) {
+        await merchantsUseCases.updateMerchant(signal, merchantData.id, values);
         message.success(`Merchant ${values.name} actualizado con éxito`);
       } else {
         await merchantsUseCases.createMerchant(signal, values);
@@ -54,6 +51,8 @@ const MerchantForm: React.FC<MerchantFormProps> = ({ isOpen, onClose, merchantDa
     }
   };
 
+  if (!isClient) return null;
+
   return (
     <Modal 
       open={isOpen} 
@@ -64,8 +63,17 @@ const MerchantForm: React.FC<MerchantFormProps> = ({ isOpen, onClose, merchantDa
           {isEditing ? "Editar Merchant" : "Nuevo Merchant"}
         </div>
       }
+      forceRender
     >
       <Form form={form} layout="vertical">
+        
+        {/* Campo ID (No editable) */}
+        {isEditing && (
+          <Form.Item label="ID" name="id">
+            <Input placeholder="ID del Merchant" disabled />
+          </Form.Item>
+        )}
+
         <Form.Item 
           label="Nombre" 
           name="name" 
@@ -88,8 +96,8 @@ const MerchantForm: React.FC<MerchantFormProps> = ({ isOpen, onClose, merchantDa
           rules={[{ required: true, message: "Selecciona un tipo de merchant" }]}
         >
           <Select placeholder="Selecciona el tipo de merchant">
-            <Option value="MERCHANT_TYPE_PERSONAL_SERVICES">Servicios Personales</Option>
-            <Option value="MERCHANT_TYPE_FINANCIAL_SERVICES">Servicios Financieros</Option>
+            <Option value="MERCHANT_TYPE_PERSONAL_SERVICES">Servicios Personales</Option> {/*todo solucionar el value*/}
+            <Option value="MERCHANT_TYPE_FINANCIAL_SERVICES">Servicios Financieros</Option> {/*todo solucionar el value*/}
           </Select>
         </Form.Item>
 
