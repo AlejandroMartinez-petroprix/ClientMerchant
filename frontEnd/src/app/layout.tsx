@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Layout } from "antd";
+import { Layout, ConfigProvider, theme as antdTheme } from "antd";
 import Sidebar from "@/common/components/SidebarComponent/Delivery/components/Sidebar";
 
 const geistSans = localFont({
@@ -19,17 +20,37 @@ const geistMono = localFont({
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
+
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Layout style={{ minHeight: "100vh" }}>
-          <Sidebar />
-          <Layout className="p-4">
-            <Layout.Content className="bg-white p-6 shadow rounded">
-              {children}
-            </Layout.Content>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased ${
+          theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"
+        }`}
+      >
+        <ConfigProvider
+          theme={{
+            algorithm: theme === "dark" ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+          }}
+        >
+          <Layout style={{ minHeight: "100vh" }}>
+            <Sidebar theme={theme} toggleTheme={toggleTheme} />
+            <Layout className="p-4">
+              <Layout.Content
+                className={`p-6 shadow rounded ${
+                  theme === "dark" ? "bg-gray-700 text-white" : "bg-white text-black"
+                }`}
+              >
+                {children}
+              </Layout.Content>
+            </Layout>
           </Layout>
-        </Layout>
+        </ConfigProvider>
       </body>
     </html>
   );

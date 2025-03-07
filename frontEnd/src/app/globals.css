@@ -8,20 +8,24 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  .ant-input, .ant-input-affix-wrapper {
+    background-color: #222;
+    color: #fff; 
+    border: 1px solid #555; 
   }
+
+
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+
+
+/* Ajuste de errores en formularios */
+.ant-form-item-explain-error {
+  color: #ff4d4f;
 }
