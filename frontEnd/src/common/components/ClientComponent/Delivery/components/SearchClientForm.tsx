@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import clientsUseCases from "@/service/src/application/queries/lib/clients";
 import { Client } from "../interface";
-import { Input } from "antd";
+import { Input, Checkbox } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -25,7 +25,8 @@ const SearchClientForm: React.FC<SearchClientFormProps> = ({ setClients }) => {
   });
 
   const [error, setError] = useState<string | null>(null);
-  const [hasSearched, setHasSearched] = useState(false); // ✅ Para controlar si ya se ha hecho una búsqueda
+  const [hasSearched, setHasSearched] = useState(false);
+  const [simpleOutput, setSimpleOutput] = useState(false);
 
   const updateSearchParams = (key: string, value: string) => {
     const params = new URLSearchParams();
@@ -43,51 +44,52 @@ const SearchClientForm: React.FC<SearchClientFormProps> = ({ setClients }) => {
 
   const debouncedSearch = useDebouncedCallback(async () => {
     setError(null);
-
+  
     const name = searchParams.get("name") || "";
     const email = searchParams.get("email") || "";
     const id = searchParams.get("id") || "";
-
+  
     if (!name && !email && !id) {
       setClients([]);
       setHasSearched(false);
       return;
     }
-
+  
     setHasSearched(true);
-
+  
     try {
       const signal = new AbortController().signal;
       let response: Client | Client[] | null = null;
       let clientData: Client[] | null = null;
-
+  
       if (name) {
         response = await clientsUseCases.searchClientsByName(signal, name);
       } else if (email) {
         response = await clientsUseCases.findByEmail(signal, email);
       } else if (id) {
-        response = await clientsUseCases.getClientById(signal, id);
+        response = await clientsUseCases.getClientById(signal, id, simpleOutput);
       }
-
+  
       clientData = Array.isArray(response) ? response : response ? [response] : null;
-
+  
       if (!clientData || clientData.length === 0) {
         throw new Error("No se encontraron clientes.");
       }
-
+  
       setClients(clientData);
     } catch {
       setError("Cliente no encontrado.");
       setClients([]);
     }
-  }, 200); // Debounce de 200ms
+  }, 500);
+  
 
   useEffect(() => {
     debouncedSearch();
-  }, [searchParams, debouncedSearch]);
+  }, [searchParams, simpleOutput,debouncedSearch]);
 
   return (
-    <div className="p-4 bg-white shadow rounded">
+    <div className="p-4 shadow rounded">
       <h2 className="text-xl font-bold mb-4">Buscar Cliente</h2>
 
       <div className="grid grid-cols-3 gap-4 mb-4">
@@ -132,7 +134,17 @@ const SearchClientForm: React.FC<SearchClientFormProps> = ({ setClients }) => {
               }}
               prefix={<SearchOutlined />}
             />
+            
           </div>
+          <div>
+          <label className="block font-medium"></label>
+          <Checkbox 
+            checked={simpleOutput} 
+            onChange={(e) => setSimpleOutput(e.target.checked)}
+          >
+            Activar Simple Output
+          </Checkbox>
+        </div>
         </div>
       </div>
 

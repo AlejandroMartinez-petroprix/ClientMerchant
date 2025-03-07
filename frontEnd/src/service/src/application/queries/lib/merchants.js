@@ -30,7 +30,7 @@ const createMerchant = async (signal, merchantData, token) => {
   );
 };
 
-const getMerchantById = async (signal, id, token) => {
+const getMerchantById = async (signal, id, simpleOutput = false, token) => {
   return manageRequest(
     signal,
     "getMerchantById",
@@ -41,7 +41,7 @@ const getMerchantById = async (signal, id, token) => {
     "no-store",
     {},
     true,
-    { id }
+    { id,simpleOutput }
   );
 };
 

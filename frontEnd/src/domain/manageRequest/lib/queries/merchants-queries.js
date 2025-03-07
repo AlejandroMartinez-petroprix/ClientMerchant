@@ -5,8 +5,8 @@ export const MERCHANTS_QUERIES = {
   
     createMerchant: () => `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants`,
   
-    getMerchantById: ({ id }) => {
-      return `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/${id}`; //todo: introduce simpleOutput
+    getMerchantById: ({ id,simpleOutput }) => {
+      return `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/${id}?simpleOutput=${simpleOutput}`;
     },
   
     updateMerchant: ({ id }) => `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/${id}`,

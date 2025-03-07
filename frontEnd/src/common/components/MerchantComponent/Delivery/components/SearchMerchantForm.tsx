@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams} from "next/navigation";
-import { Input } from "antd";
+import { useSearchParams } from "next/navigation";
+import { Input, Checkbox } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useDebouncedCallback } from "use-debounce";
 import merchantsUseCases from "@/service/src/application/queries/lib/merchants";
@@ -21,11 +21,12 @@ const SearchMerchantForm: React.FC<SearchMerchantFormProps> = ({ setMerchants, u
     id: searchParams.get("id") || "",
   });
 
+  const [simpleOutput, setSimpleOutput] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
   const debouncedSearch = useDebouncedCallback(async () => {
-    setError(null);  // Limpiamos error previo
+    setError(null);
     setHasSearched(false);
 
     const signal = new AbortController().signal;
@@ -45,7 +46,7 @@ const SearchMerchantForm: React.FC<SearchMerchantFormProps> = ({ setMerchants, u
       } else if (search.clientId) {
         response = await merchantsUseCases.getMerchantsByClientId(signal, search.clientId);
       } else if (search.id) {
-        const merchant = await merchantsUseCases.getMerchantById(signal, search.id);
+        const merchant = await merchantsUseCases.getMerchantById(signal, search.id, simpleOutput);
         response = merchant ? [merchant] : [];
       }
 
@@ -60,10 +61,9 @@ const SearchMerchantForm: React.FC<SearchMerchantFormProps> = ({ setMerchants, u
     }
   }, 500);
 
-
   useEffect(() => {
     debouncedSearch();
-  }, [search, debouncedSearch]);
+  }, [search, simpleOutput, debouncedSearch]);
 
   return (
     <div className="p-4 shadow rounded">
@@ -113,8 +113,13 @@ const SearchMerchantForm: React.FC<SearchMerchantFormProps> = ({ setMerchants, u
               prefix={<SearchOutlined />}
             />
           </div>
+          <Checkbox checked={simpleOutput} onChange={(e) => setSimpleOutput(e.target.checked)}>
+            Activar Simple Output
+          </Checkbox>
         </div>
       </div>
+
+
 
       {hasSearched && error && <p className="text-red-500">{error}</p>}
     </div>

@@ -4,7 +4,7 @@ export const CLIENTS_QUERIES = {
   },
   createClient: () => `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients`,
   
-  getClientById: ({ id, simpleOutput = false }) => 
+  getClientById: ({ id, simpleOutput }) => 
     `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/${id}?simpleOutput=${simpleOutput}`,
   
   findByEmail: ({ email }) =>

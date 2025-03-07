@@ -1,5 +1,6 @@
 import manageRequest from '@/domain/manageRequest';
 
+
 const searchClientsByName = (signal, name, token) => {
   return manageRequest(
     signal,                     
@@ -31,7 +32,7 @@ const createClient = async (signal, clientData,token) => {
   );
 };
 
-const getClientById = async (signal, id,token) => {
+const getClientById = async (signal, id, simpleOutput = false, token) => {
   return manageRequest(
     signal,
     "getClientById",
@@ -42,9 +43,10 @@ const getClientById = async (signal, id,token) => {
     "no-store",
     {},
     true,
-    { id }
+    { id, simpleOutput }
   );
 };
+
 
 const findByEmail = async (signal, email,token) => {
   return manageRequest(
