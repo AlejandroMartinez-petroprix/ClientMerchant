@@ -29,29 +29,40 @@ public class JwtInterceptor implements HandlerInterceptor {
      * @param handler  The handler.
      * @return true if the user is over 18 years old, false otherwise.
      * @throws Exception if an error occurs during token verification.
-*/
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info("Intercepting request to check if user is over 18 years old");
         String token = request.getHeader("Authorization");
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
+            log.info("🔑 Token recibido: {}", token);
+
             try {
                 Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
                 JWTVerifier verifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = verifier.verify(token);
+
                 int age = decodedJWT.getClaim("age").asInt();
+                log.info("📢 Edad extraída del token: {}", age);
+
                 if (age < 18) {
+                    log.warn("❌ Usuario menor de edad. Bloqueando acceso.");
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     response.getWriter().write("User is under 18 years old");
                     return false;
                 }
+
+                log.info("✅ Usuario autorizado.");
             } catch (Exception e) {
+                log.error("❌ Token inválido.", e);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Invalid token");
                 return false;
             }
+        } else {
+            log.warn("⚠️ No se recibió ningún token.");
         }
+
         return true;
     }
 }
