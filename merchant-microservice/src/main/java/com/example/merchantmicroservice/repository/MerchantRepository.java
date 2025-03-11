@@ -64,17 +64,19 @@ public class MerchantRepository {
      *
      * @param id the ID of the Merchant
      * @return an Optional containing the found Merchant, or empty if not found
-     */
-    public Optional<Merchant> findById(String id) {
-        Merchant merchant = merchantTable.getItem(r -> r.key(k -> k.partitionValue(Merchant.MERCHANT_PK_PREFIX + id)
-                .sortValue(Merchant.MERCHANT_SK_PREFIX)));
+     **/
+      public Optional<Merchant> findById(String id) {
+              Merchant merchant = merchantTable.getItem(r -> r.key(k -> k.partitionValue(Merchant.MERCHANT_PK_PREFIX + id)
+                      .sortValue(Merchant.MERCHANT_SK_PREFIX)));
 
-        if (merchant == null) {
-            log.warn("Merchant con ID {} no encontrado.", id);
-            return Optional.empty();
-        }
-        return Optional.of(merchant);
-    }
+              if (merchant == null) {
+                  log.warn("Merchant con ID {} no encontrado.", id);
+                  return Optional.empty();
+              }
+              return Optional.of(merchant);
+          }
+
+
 
     /**
      * Finds Merchants by their name.
