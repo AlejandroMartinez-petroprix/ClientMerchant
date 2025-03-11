@@ -14,9 +14,6 @@ export const CLIENTS_QUERIES = {
 
   getAllClients: () => `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/all`,
 
-  checkMerchantExists: ({ merchantId }) =>
-    `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/merchant/${merchantId}/exists?merchantId=${encodeURIComponent(merchantId)}`,
-  
 };
 
 export const CLIENTS_ERROR_MESSAGES = {

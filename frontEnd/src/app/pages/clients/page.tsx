@@ -8,7 +8,6 @@ import SearchClientForm from "@/common/components/ClientComponent/Delivery/compo
 import TableComponent from "@/common/components/TableComponent/Delivery/components/TableComponent";
 import { Client } from "@/common/components/ClientComponent/Delivery/interface";
 import clientsUseCases from "@/service/src/application/queries/lib/clients";
-import ChecksForm from "@/common/components/ClientComponent/Delivery/components/ChecksForm";
 import { useAuth } from "@/context/AuthContext"; 
 
 
@@ -133,11 +132,6 @@ export default function ClientManagement() {
       ) : (
         <p className="text-center text-red-500 mt-4">Debes iniciar sesión para buscar clientes.</p>
       ),
-    },
-    {
-      key: "checks",
-      label: "Comprobaciones",
-      children: token ? <ChecksForm /> : <p className="text-center text-red-500 mt-4">Debes iniciar sesión para acceder.</p>,
     },
   ];
 
