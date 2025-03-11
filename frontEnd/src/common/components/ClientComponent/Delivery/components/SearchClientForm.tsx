@@ -69,7 +69,7 @@ const SearchClientForm: React.FC<SearchClientFormProps> = ({ setClients }) => {
     } else if (email) {
       response = await clientsUseCases.findByEmail(signal, email, token);
     } else if (id) {
-      response = await clientsUseCases.getClientById(signal, id, false, token);
+      response = await clientsUseCases.getClientById(signal, id, simpleOutput, token);
     }
 
     clientData = Array.isArray(response) ? response : response ? [response] : null;
