@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Modal, Input, message, Form } from "antd";
 import clientsUseCases from "@/service/src/application/queries/lib/clients";
 import { Client } from "../interface";
@@ -16,13 +16,7 @@ export function ClientForm({ isOpen, onClose, clientData }: ClientFormProps) {
   const isEditing = Boolean(clientData);
   const [form] = Form.useForm();
   const formRef = useRef(form);
-  const [isClient, setIsClient] = useState(false);
   const { token } = useAuth();
-  
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   useEffect(() => {
     if (clientData) {
@@ -38,10 +32,10 @@ export function ClientForm({ isOpen, onClose, clientData }: ClientFormProps) {
       const signal = new AbortController().signal;
 
       if (isEditing && clientData?.id) {
-        await clientsUseCases.updateClient(signal, clientData.id, values,token);
+        await clientsUseCases.updateClient(signal, clientData.id, values, token);
         message.success(`Cliente ${values.name} actualizado con éxito`);
       } else {
-        await clientsUseCases.createClient(signal, values,token);
+        await clientsUseCases.createClient(signal, values, token);
         message.success(`Cliente ${values.name} creado con éxito`);
       }
 
@@ -51,8 +45,6 @@ export function ClientForm({ isOpen, onClose, clientData }: ClientFormProps) {
       console.error(error);
     }
   };
-
-  if (!isClient) return null;
 
   return (
     <Modal
@@ -66,18 +58,20 @@ export function ClientForm({ isOpen, onClose, clientData }: ClientFormProps) {
     >
       <Form form={form} layout="vertical">
         
-        {/* Campo ID (No editable) */}
-        <Form.Item label="ID" name="id">
-          <Input placeholder="ID" disabled />
-        </Form.Item>
+        {/* Campo ID (Solo se muestra si está editando) */}
+        {isEditing && (
+          <Form.Item label="ID" name="id">
+            <Input placeholder="ID" disabled />
+          </Form.Item>
+        )}
 
-        {/* Campo CIF/NIE/NIF (No editable) */}
+        {/* Campo CIF/NIE/NIF (Editable al crear, bloqueado al editar) */}
         <Form.Item
           label="CIF/NIF/NIE"
           name="cifNifNie"
           rules={[{ required: true, message: "Este campo es obligatorio" }]}
         >
-          <Input placeholder="CIF/NIF/NIE" disabled />
+          <Input placeholder="CIF/NIF/NIE" disabled={isEditing} />
         </Form.Item>
 
         {/* Campo Nombre */}
