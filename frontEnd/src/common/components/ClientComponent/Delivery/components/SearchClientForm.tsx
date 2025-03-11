@@ -7,6 +7,7 @@ import { Client } from "../interface";
 import { Input, Checkbox } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useDebouncedCallback } from "use-debounce";
+import { useAuth } from "@/context/AuthContext"; 
 
 interface SearchClientFormProps {
   setClients: (clients: Client[]) => void;
@@ -17,6 +18,7 @@ const SearchClientForm: React.FC<SearchClientFormProps> = ({ setClients }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const { token } = useAuth();
 
   const [search, setSearch] = useState({
     name: searchParams.get("name") || "",
@@ -43,45 +45,45 @@ const SearchClientForm: React.FC<SearchClientFormProps> = ({ setClients }) => {
   };
 
   const debouncedSearch = useDebouncedCallback(async () => {
-    setError(null);
-  
-    const name = searchParams.get("name") || "";
-    const email = searchParams.get("email") || "";
-    const id = searchParams.get("id") || "";
-  
-    if (!name && !email && !id) {
-      setClients([]);
-      setHasSearched(false);
-      return;
+  setError(null);
+
+  const name = searchParams.get("name") || "";
+  const email = searchParams.get("email") || "";
+  const id = searchParams.get("id") || "";
+
+  if (!name && !email && !id) {
+    setClients([]);
+    setHasSearched(false);
+    return;
+  }
+
+  setHasSearched(true);
+
+  try {
+    const signal = new AbortController().signal;
+    let response: Client | Client[] | null = null;
+    let clientData: Client[] | null = null;
+
+    if (name) {
+      response = await clientsUseCases.searchClientsByName(signal, name, token);
+    } else if (email) {
+      response = await clientsUseCases.findByEmail(signal, email, token);
+    } else if (id) {
+      response = await clientsUseCases.getClientById(signal, id, false, token);
     }
-  
-    setHasSearched(true);
-  
-    try {
-      const signal = new AbortController().signal;
-      let response: Client | Client[] | null = null;
-      let clientData: Client[] | null = null;
-  
-      if (name) {
-        response = await clientsUseCases.searchClientsByName(signal, name);
-      } else if (email) {
-        response = await clientsUseCases.findByEmail(signal, email);
-      } else if (id) {
-        response = await clientsUseCases.getClientById(signal, id, simpleOutput);
-      }
-  
-      clientData = Array.isArray(response) ? response : response ? [response] : null;
-  
-      if (!clientData || clientData.length === 0) {
-        throw new Error("No se encontraron clientes.");
-      }
-  
-      setClients(clientData);
-    } catch {
-      setError("Cliente no encontrado.");
-      setClients([]);
+
+    clientData = Array.isArray(response) ? response : response ? [response] : null;
+
+    if (!clientData || clientData.length === 0) {
+      throw new Error("No se encontraron clientes.");
     }
-  }, 500);
+
+    setClients(clientData);
+  } catch {
+    setError("Cliente no encontrado.");
+    setClients([]);
+  }
+}, 500);
   
 
   useEffect(() => {

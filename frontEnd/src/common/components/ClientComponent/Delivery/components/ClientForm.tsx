@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { Modal, Input, message, Form } from "antd";
 import clientsUseCases from "@/service/src/application/queries/lib/clients";
 import { Client } from "../interface";
+import { useAuth } from "@/context/AuthContext";
 
 interface ClientFormProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export function ClientForm({ isOpen, onClose, clientData }: ClientFormProps) {
   const [form] = Form.useForm();
   const formRef = useRef(form);
   const [isClient, setIsClient] = useState(false);
+  const { token } = useAuth();
+  
 
   useEffect(() => {
     setIsClient(true);
@@ -35,10 +38,10 @@ export function ClientForm({ isOpen, onClose, clientData }: ClientFormProps) {
       const signal = new AbortController().signal;
 
       if (isEditing && clientData?.id) {
-        await clientsUseCases.updateClient(signal, clientData.id, values);
+        await clientsUseCases.updateClient(signal, clientData.id, values,token);
         message.success(`Cliente ${values.name} actualizado con éxito`);
       } else {
-        await clientsUseCases.createClient(signal, values);
+        await clientsUseCases.createClient(signal, values,token);
         message.success(`Cliente ${values.name} creado con éxito`);
       }
 

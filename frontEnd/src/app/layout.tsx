@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Layout, ConfigProvider, theme as antdTheme } from "antd";
 import Sidebar from "@/common/components/SidebarComponent/Delivery/components/Sidebar";
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,24 +34,26 @@ export default function RootLayout({
           theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"
         }`}
       >
-        <ConfigProvider
-          theme={{
-            algorithm: theme === "dark" ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
-          }}
-        >
-          <Layout style={{ minHeight: "100vh" }}>
-            <Sidebar theme={theme} toggleTheme={toggleTheme} />
-            <Layout className="p-4">
-              <Layout.Content
-                className={`p-6 shadow rounded ${
-                  theme === "dark" ? "bg-gray-700 text-white" : "bg-white text-black"
-                }`}
-              >
-                {children}
-              </Layout.Content>
+        <AuthProvider>
+          <ConfigProvider
+            theme={{
+              algorithm: theme === "dark" ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+            }}
+          >
+            <Layout style={{ minHeight: "100vh" }}>
+              <Sidebar theme={theme} toggleTheme={toggleTheme} />
+              <Layout className="p-4">
+                <Layout.Content
+                  className={`p-6 shadow rounded ${
+                    theme === "dark" ? "bg-gray-700 text-white" : "bg-white text-black"
+                  }`}
+                >
+                  {children}
+                </Layout.Content>
+              </Layout>
             </Layout>
-          </Layout>
-        </ConfigProvider>
+          </ConfigProvider>
+        </AuthProvider>
       </body>
     </html>
   );

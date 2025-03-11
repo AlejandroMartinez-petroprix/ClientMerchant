@@ -3,20 +3,22 @@
 import { useState } from "react";
 import { Input, Button, message, Card } from "antd";
 import clientsUseCases from "@/service/src/application/queries/lib/clients";
+import { useAuth } from "@/context/AuthContext";
 
 const CheckMerchantExists = () => {
   const [merchantId, setMerchantId] = useState("");
   const [exists, setExists] = useState<boolean | null>(null);
+  const token = useAuth();
 
   const handleCheckMerchant = async () => {
     if (!merchantId.trim()) {
       message.warning("Introduce un ID de merchant");
       return;
     }
-
+  
     try {
       const signal = new AbortController().signal;
-      const response = await clientsUseCases.checkMerchantExists(signal, merchantId);
+      const response = await clientsUseCases.checkMerchantExists(signal, merchantId, token);
       setExists(response);
     } catch {
       message.error("Error al comprobar el merchant");
