@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ theme, toggleTheme }) => {
       <div className="flex justify-center items-center p-4">
         <Button
           type="text"
-          icon={collapsed ? <MenuUnfoldOutlined className="text-white" /> : <MenuFoldOutlined className="text-white" />}
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           onClick={toggleCollapsed}
           className="text-xl"
         />
@@ -100,19 +100,22 @@ const Sidebar: React.FC<SidebarProps> = ({ theme, toggleTheme }) => {
       />
 
       {/* Botón de autenticación */}
-      <div className="mt-auto p-4">
+      <div className="mt-auto p-4 flex justify-center">
         <Button
           type="default"
           block
           icon={token ? <LogoutOutlined /> : <LoginOutlined />}
           className={`flex items-center justify-center gap-2 font-semibold transition-all ${
-            theme === "dark" ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-gray-200 text-black hover:bg-gray-300"
+            theme === "dark"
+              ? "bg-gray-800 text-white hover:bg-gray-700"
+              : "bg-gray-200 text-black hover:bg-gray-300"
           }`}
           onClick={token ? logout : () => setIsModalOpen(true)}
         >
-          {token ? "Cerrar Sesión" : "Iniciar Sesión"}
+          {!collapsed && (token ? "Cerrar Sesión" : "Iniciar Sesión")}
         </Button>
       </div>
+
 
       {/* Modal de inicio de sesión */}
       <Modal
