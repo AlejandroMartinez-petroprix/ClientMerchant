@@ -1,16 +1,16 @@
 export const CLIENTS_QUERIES = {
-  searchClientsByName: ({ name }) => {
-    return `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/search/by-name?name=${encodeURIComponent(name)}`;
+  searchClientsByName: () => {
+    return `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/search/by-name`;
   },
   createClient: () => `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients`,
   
   getClientById: ({ id, simpleOutput }) => 
     `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/${id}?simpleOutput=${simpleOutput}`,
   
-  findByEmail: ({ email }) =>
-    `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/search/by-email?email=${encodeURIComponent(email)}`,
+  findByEmail: () =>
+    `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/search/by-email`,
 
-  updateClient: ({ id }) => `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/${id}`,
+  updateClient: ( id ) => `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/${id}`,
 
   getAllClients: () => `${process.env.NEXT_PUBLIC_API_URL_CLIENTS}/clients/all`,
 

@@ -1,20 +1,20 @@
 export const MERCHANTS_QUERIES = {
-    searchMerchantsByName: ({ name }) => {
-      return `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/search?name=${encodeURIComponent(name)}`;
+    searchMerchantsByName: () => {
+      return `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/search`;
     },
   
     createMerchant: () => `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants`,
   
-    getMerchantById: ({ id,simpleOutput }) => {
+    getMerchantById: ( { id, simpleOutput } ) => {
       return `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/${id}?simpleOutput=${simpleOutput}`;
     },
   
-    updateMerchant: ({ id }) => `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/${id}`,
+    updateMerchant: (id) => `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/${id}`,
   
     getAllMerchants: () => `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/all`,
   
-    getMerchantsByClientId: ({ clientId }) => {
-      return `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/client/${clientId}`;
+    getMerchantsByClientId: () => {
+      return `${process.env.NEXT_PUBLIC_API_URL_MERCHANTS}/merchants/client`;
     },
   
     getClientByMerchantId: ({ merchantId }) => {

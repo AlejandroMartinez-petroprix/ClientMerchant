@@ -5,38 +5,35 @@ const searchClientsByName = (signal, name, token) => {
   return manageRequest(
     signal,                     
     'searchClientsByName',      
-    {},                         
-    'normal',                   
-    'get',                      
-    token,                      
-    'no-store',                 
-    {},                         
-    true,                       
-    { name }                    
+    {name},  
+    'query',                   
+    undefined,        
+    "get",              
+    token                 
   );
 };
 
-const createClient = async (signal, clientData,token) => {
+const createClient = (signal, clientData,token) => {
 
   return manageRequest(
     signal,
     "createClient",
     clientData,
-    "body",
+    "normal",
+    "normal",
     "post",
     token,
     "no-store",
-    { "Content-Type": "application/json" },
-    true,
-    {}
+    { "Content-Type": "application/json" }
   );
 };
 
-const getClientById = async (signal, id, simpleOutput = false, token) => {
+const getClientById = (signal, id, simpleOutput = false, token) => {
   return manageRequest(
     signal,
     "getClientById",
     {},
+    undefined,
     "normal",
     "get",
     token,
@@ -48,48 +45,43 @@ const getClientById = async (signal, id, simpleOutput = false, token) => {
 };
 
 
-const findByEmail = async (signal, email,token) => {
+const findByEmail = (signal, email,token) => {
   return manageRequest(
     signal,
     "findByEmail",
-    {},
-    "normal",
+    {email},
+    "query",
+    undefined,
     "get",
     token,
-    "no-store",
-    {},
-    true,
-    { email }
   );
 };
 
-const updateClient = async (signal, id, clientData,token) => {
+const updateClient = (signal, id, clientData,token) => {
   return manageRequest(
     signal,
     "updateClient",
     clientData,
-    "body",
+    undefined,
+    undefined,
     "put",
     token,
     "no-store",
     { "Content-Type": "application/json" },
-    true,
-    { id }
+    undefined,
+     id 
   );
 };
 
-const getAllClients = async (signal,token) => {
+const getAllClients = (signal,token) => {
   return manageRequest(
     signal,
     "getAllClients",
     {},
+    "query",
     "normal",
     "get",
     token,
-    "no-store",
-    {},
-    true,
-    {}
   );
 };
 

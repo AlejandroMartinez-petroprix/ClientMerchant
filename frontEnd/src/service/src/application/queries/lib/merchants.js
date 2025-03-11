@@ -1,107 +1,92 @@
 import manageRequest from '@/domain/manageRequest';
 
-const searchMerchantsByName = (signal, name, token) => {
+const searchMerchantsByName = (signal, name) => {
   return manageRequest(
     signal,
     'searchMerchantsByName',
-    {},
+    {name},
+    'query',
     'normal',
     'get',
-    token,
-    'no-store',
-    {},
-    true,
-    { name }
-  );
+    undefined
+  )
 };
 
-const createMerchant = async (signal, merchantData, token) => {
+const createMerchant = (signal, merchantData) => {
   return manageRequest(
     signal,
     "createMerchant",
     merchantData,
-    "body",
+    "normal",
+    "normal",
     "post",
-    token,
+    undefined,
     "no-store",
-    { "Content-Type": "application/json" },
-    true,
-    {}
+    { "Content-Type": "application/json" }
   );
 };
 
-const getMerchantById = async (signal, id, simpleOutput = false, token) => {
+const getMerchantById = (signal, id, simpleOutput = false) => {
   return manageRequest(
     signal,
     "getMerchantById",
     {},
+    undefined,
     "normal",
     "get",
-    token,
+    undefined,
     "no-store",
     {},
     true,
-    { id,simpleOutput }
+    { id, simpleOutput }
   );
 };
 
-const getAllMerchants = async (signal, token) => {
+const getAllMerchants = (signal) => {
   return manageRequest(
     signal,
     "getAllMerchants",
     {},
     "normal",
     "get",
-    token,
-    "no-store",
-    {},
-    true,
-    {}
   );
 };
 
-const updateMerchant = async (signal, id, merchantData, token) => {
+const updateMerchant = (signal, id, merchantData) => {
   return manageRequest(
     signal,
     "updateMerchant",
     merchantData,
-    "body",
+    undefined,
+    undefined,
     "put",
-    token,
-    "no-store",
+    undefined,
+    undefined,
     { "Content-Type": "application/json" },
-    true,
-    { id }
+    undefined,
+    id
   );
 };
 
-const getMerchantsByClientId = async (signal, clientId, token) => {
+const getMerchantsByClientId = (signal, clientId) => {
   return manageRequest(
     signal,
     "getMerchantsByClientId",
-    {},
+    {clientId},
+    "url",
     "normal",
     "get",
-    token,
-    "no-store",
-    {},
-    true,
-    { clientId }
   );
 };
 
-const getClientByMerchantId = async (signal, merchantId, token) => {
+const getClientByMerchantId = (signal, merchantId) => {
   return manageRequest(
     signal,
     "getClientByMerchantId",
-    {},
-    "normal",
+    {merchantId},
+    "url",
+    "url",
     "get",
-    token,
-    "no-store",
-    {},
-    true,
-    { merchantId }
   );
 };
 
