@@ -24,7 +24,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ theme, toggleTheme }) => {
-  const { token, setToken, logout } = useAuth(); 
+  const { token, setToken, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempToken, setTempToken] = useState("");
@@ -49,44 +49,90 @@ const Sidebar: React.FC<SidebarProps> = ({ theme, toggleTheme }) => {
       trigger={null}
       collapsible
       collapsed={collapsed}
-      className={`h-screen shadow-md ${theme === "light" ? "bg-white text-black" : "bg-gray-900 text-white"}`}
-      theme="light"
+      className={`h-screen shadow-md transition-all duration-300 ${
+        theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-black"
+      }`}
+      theme={theme === "dark" ? "dark" : "light"}
     >
+      {/* Botón de colapsar */}
       <div className="flex justify-center items-center p-4">
-        <Button type="primary" onClick={toggleCollapsed} icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
+        <Button
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined className="text-white" /> : <MenuFoldOutlined className="text-white" />}
+          onClick={toggleCollapsed}
+          className="text-xl"
+        />
       </div>
 
+      {/* Switch de tema */}
       <div className="flex justify-center items-center p-2">
-        <Switch checked={theme === "dark"} onChange={toggleTheme} checkedChildren={<MoonOutlined />} unCheckedChildren={<SunOutlined />} />
+        <Switch
+          checked={theme === "dark"}
+          onChange={toggleTheme}
+          checkedChildren={<MoonOutlined />}
+          unCheckedChildren={<SunOutlined />}
+        />
       </div>
 
-      <Menu theme="light" mode="inline" defaultSelectedKeys={["1"]} items={[
-        { key: "/", icon: <HomeOutlined />, label: <Link href="/">Home</Link> },
-        { key: "/clients", icon: <UserOutlined />, label: <Link href="/pages/clients">Clients</Link> },
-        { key: "/merchants", icon: <ShopOutlined />, label: <Link href="/pages/merchants">Merchants</Link> },
-      ]} />
-
-      <div className="mt-auto p-4">
-        <Menu theme="light" mode="inline" items={[
+      {/* Menú de navegación */}
+      <Menu
+        theme={theme === "dark" ? "dark" : "light"}
+        mode="inline"
+        defaultSelectedKeys={["1"]}
+        className="border-none"
+        items={[
           {
-            key: "auth",
-            icon: token ? <LogoutOutlined style={{ color: "#1677ff" }} /> : <LoginOutlined style={{ color: "#1677ff" }} />,
-            label: (
-              <span style={{ color: "#1677ff", fontWeight: "600" }}>
-                {token ? "Cerrar Sesión" : "Iniciar Sesión"}
-              </span>
-            ),
-            onClick: token ? logout : () => setIsModalOpen(true),
-            style: { backgroundColor: "rgba(40, 3, 250, 0.1)", borderRadius: "6px" },
+            key: "/",
+            icon: <HomeOutlined />,
+            label: <Link href="/">Home</Link>,
           },
-        ]} />
+          {
+            key: "/clients",
+            icon: <UserOutlined />,
+            label: <Link href="/pages/clients">Clients</Link>,
+          },
+          {
+            key: "/merchants",
+            icon: <ShopOutlined />,
+            label: <Link href="/pages/merchants">Merchants</Link>,
+          },
+        ]}
+      />
+
+      {/* Botón de autenticación */}
+      <div className="mt-auto p-4">
+        <Button
+          type="default"
+          block
+          icon={token ? <LogoutOutlined /> : <LoginOutlined />}
+          className={`flex items-center justify-center gap-2 font-semibold transition-all ${
+            theme === "dark" ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-gray-200 text-black hover:bg-gray-300"
+          }`}
+          onClick={token ? logout : () => setIsModalOpen(true)}
+        >
+          {token ? "Cerrar Sesión" : "Iniciar Sesión"}
+        </Button>
       </div>
 
-      <Modal title="Iniciar Sesión" open={isModalOpen} onCancel={() => setIsModalOpen(false)} footer={[
-        <Button key="cancel" onClick={() => setIsModalOpen(false)}>Cancelar</Button>,
-        <Button key="accept" type="primary" onClick={handleTokenSubmit}>Aceptar</Button>,
-      ]}>
-        <Input.Password placeholder="Introduce tu token" value={tempToken} onChange={(e) => setTempToken(e.target.value)} />
+      {/* Modal de inicio de sesión */}
+      <Modal
+        title="Iniciar Sesión"
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setIsModalOpen(false)}>
+            Cancelar
+          </Button>,
+          <Button key="accept" type="primary" onClick={handleTokenSubmit}>
+            Aceptar
+          </Button>,
+        ]}
+      >
+        <Input.Password
+          placeholder="Introduce tu token"
+          value={tempToken}
+          onChange={(e) => setTempToken(e.target.value)}
+        />
       </Modal>
     </Sider>
   );
