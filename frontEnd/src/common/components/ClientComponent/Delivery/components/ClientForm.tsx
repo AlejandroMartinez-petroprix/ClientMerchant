@@ -1,115 +1,99 @@
-"use client";
-
-import { useEffect, useRef } from "react";
-import { Modal, Input, message, Form } from "antd";
-import clientsUseCases from "@/service/src/application/queries/lib/clients";
+import { useEffect } from "react";
+import { Modal, Input, Form, Button, message } from "antd";
 import { Client } from "../interface";
-import { useAuth } from "@/context/AuthContext";
+import { updateClient, createClient } from "../../Infrastructure/clients";
 
 interface ClientFormProps {
   isOpen: boolean;
   onClose: () => void;
   clientData?: Client;
+  onUpdateClient: (updatedClient: Client) => void;
+  onCreateClient: (newClient: Client) => void;
+  token: string | null;
 }
 
-export function ClientForm({ isOpen, onClose, clientData }: ClientFormProps) {
-  const isEditing = Boolean(clientData);
+const ClientForm: React.FC<ClientFormProps> = ({ isOpen, onClose, clientData, onUpdateClient, onCreateClient, token }) => {
   const [form] = Form.useForm();
-  const formRef = useRef(form);
-  const { token } = useAuth();
+  const isEditing = !!clientData;
 
   useEffect(() => {
     if (clientData) {
-      formRef.current.setFieldsValue(clientData);
+      form.setFieldsValue(clientData);
     } else {
-      formRef.current.resetFields();
+      form.resetFields();
     }
-  }, [clientData, isOpen]);
+  }, [clientData, form]);
 
-  const handleSubmit = async () => {
-    try {
-      const values = await form.validateFields();
-      const signal = new AbortController().signal;
-
-      if (isEditing && clientData?.id) {
-        await clientsUseCases.updateClient(signal, clientData.id, values, token);
-        message.success(`Cliente ${values.name} actualizado con éxito`);
-      } else {
-        await clientsUseCases.createClient(signal, values, token);
-        message.success(`Cliente ${values.name} creado con éxito`);
+  const handleFinish = async (values: Partial<Client>) => {
+    if (isEditing) {
+      try {
+        const updatedClient = await updateClient(clientData!.id, values, token);
+        if (updatedClient) {
+          onUpdateClient(updatedClient);
+          message.success("Cliente editado correctamente");
+          onClose();
+        } else {
+          throw new Error("No se pudo actualizar el cliente");
+        }
+      } catch  {
+        message.error("Error al actualizar el cliente");
       }
-
-      onClose();
-    } catch (error) {
-      message.error("Ocurrió un error al guardar el cliente");
-      console.error(error);
+    } else {
+      try {
+        const newClient = await createClient(values, token);
+        if (newClient) {
+          onCreateClient(newClient);
+          message.success("Cliente creado correctamente");
+          onClose();
+        } else {
+          throw new Error("No se pudo crear el cliente");
+        }
+      } catch  {
+        message.error("Error al crear el cliente");
+      }
     }
   };
 
   return (
     <Modal
+      title={isEditing ? "Editar Cliente" : "Crear Cliente"}
       open={isOpen}
       onCancel={onClose}
-      onOk={handleSubmit}
-      title={<div style={{ textAlign: "center", fontWeight: "bold", fontSize: "18px" }}>
-        {isEditing ? "Editar Cliente" : "Nuevo Cliente"}
-      </div>}
-      forceRender
+      footer={[
+        <Button key="cancel" onClick={onClose}>Cancelar</Button>,
+        <Button key="submit" type="primary" onClick={() => form.submit()}>
+          OK
+        </Button>
+      ]}
     >
-      <Form form={form} layout="vertical">
-        
-        {/* Campo ID (Solo se muestra si está editando) */}
+      <Form form={form} layout="vertical" onFinish={handleFinish}>
+        {/* El ID no aparece en creación, pero sí en edición */}
         {isEditing && (
           <Form.Item label="ID" name="id">
-            <Input placeholder="ID" disabled />
+            <Input disabled />
           </Form.Item>
         )}
-
-        {/* Campo CIF/NIE/NIF (Editable al crear, bloqueado al editar) */}
-        <Form.Item
-          label="CIF/NIF/NIE"
-          name="cifNifNie"
-          rules={[{ required: true, message: "Este campo es obligatorio" }]}
-        >
-          <Input placeholder="CIF/NIF/NIE" disabled={isEditing} />
+        
+        {/* CIF/NIF/NIE solo está disabled en edición */}
+        <Form.Item label="CIF/NIF/NIE" name="cifNifNie" rules={[{ required: true, message: "Este campo es obligatorio" }]}>
+          <Input disabled={isEditing} />
         </Form.Item>
 
-        {/* Campo Nombre */}
-        <Form.Item
-          label="Nombre"
-          name="name"
-          rules={[{ required: true, message: "Este campo es obligatorio" }]}
-        >
-          <Input placeholder="Nombre" />
+        <Form.Item label="Nombre" name="name" rules={[{ required: true, message: "Este campo es obligatorio" }]}>
+          <Input />
         </Form.Item>
-
-        {/* Campo Apellido */}
-        <Form.Item
-          label="Apellido"
-          name="surname"
-          rules={[{ required: true, message: "Este campo es obligatorio" }]}
-        >
-          <Input placeholder="Apellido" />
+        <Form.Item label="Apellido" name="surname">
+          <Input />
         </Form.Item>
-
-        {/* Campo Teléfono */}
-        <Form.Item
-          label="Teléfono"
-          name="phone"
-          rules={[{ required: true, message: "Este campo es obligatorio" }]}
-        >
-          <Input placeholder="Teléfono" />
+        <Form.Item label="Teléfono" name="phone" rules={[{ required: true, message: "Este campo es obligatorio" }]}>
+          <Input />
         </Form.Item>
-
-        {/* Campo Correo */}
-        <Form.Item
-          label="Correo"
-          name="email"
-          rules={[{ required: true, type: "email", message: "Introduce un correo válido" }]}
-        >
-          <Input placeholder="Correo" />
+        <Form.Item label="Correo" name="email" rules={[{ required: true, message: "Este campo es obligatorio" }]}>
+          <Input />
         </Form.Item>
       </Form>
     </Modal>
   );
-}
+};
+
+export default ClientForm;
