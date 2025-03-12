@@ -70,6 +70,7 @@ export default function MerchantManagement() {
           data={merchants}
           columns={merchantColumns}
           onEdit={handleOpenMerchantForm}
+          simpleOutput={false}
         />
       ),
     },
@@ -84,6 +85,7 @@ export default function MerchantManagement() {
               data={searchResults}
               columns={merchantColumns}
               onEdit={handleOpenMerchantForm}
+              simpleOutput={false}
             />
           ) : (
             <p className="text-center text-gray-500 mt-4">Aquí aparecerán los resultados de las búsquedas</p>
