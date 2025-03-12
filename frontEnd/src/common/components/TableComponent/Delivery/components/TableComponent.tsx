@@ -5,23 +5,18 @@ interface TableComponentProps<T> {
   data: T[];
   columns: TableProps<T>["columns"];
   onEdit: (item: T) => void;
-  
+  simpleOutput: boolean;
 }
 
-const TableComponent = <T extends { id: string; name?: string; email?: string; phone?: string; surname?: string; cifNifNie?: string; address?: string; merchantType?: string; clientId?: string }>(
-  { data, columns, onEdit }: TableComponentProps<T>
+const TableComponent = <T extends { id: string; name?: string; email?: string; phone?: string }>(
+  { data, columns, onEdit, simpleOutput }: TableComponentProps<T>
 ) => {
   
   const formattedData = data.map((item) => ({
     ...item,
-    name: item.name || "No disponible",
-    surname: item.surname || "No disponible",
-    cifNifNie: item.cifNifNie || "No disponible",
-    email: item.email || "No disponible",
-    phone: item.phone || "No disponible",
-    address: item.address || "No disponible",
-    merchantType: item.merchantType || "No disponible",
-    clientId: item.clientId || "No disponible",
+    name: simpleOutput ? "No disponible" : item.name || "No disponible",
+    email: simpleOutput ? "No disponible" : item.email || "No disponible",
+    phone: simpleOutput ? "No disponible" : item.phone || "No disponible",
   }));
 
   const actionColumn: TableProps<T>["columns"] = [
