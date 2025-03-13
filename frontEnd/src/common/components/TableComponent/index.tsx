@@ -8,7 +8,7 @@ interface TableComponentProps<T> {
   simpleOutput: boolean;
 }
 
-const TableComponent = <T extends { id: string; name?: string; email?: string; phone?: string }>(
+const TableComponent = <T extends { id: string; name?: string; email?: string; phone?: string; address?: string; merchantType?: string; clientId?: string  }>(
   { data, columns, onEdit, simpleOutput }: TableComponentProps<T>
 ) => {
   
@@ -17,7 +17,11 @@ const TableComponent = <T extends { id: string; name?: string; email?: string; p
     name: simpleOutput ? "No disponible" : item.name || "No disponible",
     email: simpleOutput ? "No disponible" : item.email || "No disponible",
     phone: simpleOutput ? "No disponible" : item.phone || "No disponible",
+    address: simpleOutput ? "No disponible" : item.address || "No disponible",
+    merchantType: simpleOutput ? "No disponible" : item.merchantType || "No disponible",
+    clientId: simpleOutput ? "No disponible" : item.clientId || "No disponible",
   }));
+  
 
   const actionColumn: TableProps<T>["columns"] = [
     {
