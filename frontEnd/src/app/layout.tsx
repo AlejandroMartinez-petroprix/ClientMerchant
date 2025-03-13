@@ -4,7 +4,7 @@ import { useState } from "react";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Layout, ConfigProvider, theme as antdTheme } from "antd";
-import Sidebar from "@/common/components/SidebarComponent/Sidebar";
+import Sidebar from "@/common/components/SidebarComponent";
 import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = localFont({

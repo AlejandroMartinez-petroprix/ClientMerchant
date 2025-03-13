@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import { Tabs, Card, Button } from "antd";
 import TableComponent from "@/common/components/TableComponent";
-import SearchMerchantForm from "./components/SearchMerchantForm";
-import MerchantForm from "./components/MerchantForm";
+import SearchForm from "@/common/components/SearchFormComponent";
+import GenericForm from "../../FormComponent";
 import { Merchant } from "../Delivery/interface";
-import { getMerchants } from "../Infrastructure/merchants";
+import { getMerchants,createMerchant, updateMerchant } from "../Infrastructure/merchants";
+
 
 interface Props {
-  searchParams: { name?: string; address?: string; id?: string };
+  searchParams: { name?: string; clientId?: string; id?: string };
 }
 
 export default function MerchantComponent({ searchParams }: Props) {
@@ -37,7 +38,6 @@ export default function MerchantComponent({ searchParams }: Props) {
 
     loadMerchants();
   }, []);
-  
 
   const handleOpenMerchantForm = (merchant?: Merchant) => {
     setMerchantToEdit(merchant || null);
@@ -53,25 +53,22 @@ export default function MerchantComponent({ searchParams }: Props) {
   };
 
   const handleSearch = async (filters: { name?: string; clientId?: string; id?: string }, simpleOutputValue: boolean) => {
-    
     if (!filters.name && !filters.clientId && !filters.id) {
       setSearchResults([]);
       setHasSearched(false);
       return;
     }
-  
+
     try {
       const results: Merchant[] = await getMerchants(filters, simpleOutputValue);
-  
       setSimpleOutput(simpleOutputValue);
       setSearchResults(results);
       setHasSearched(true);
-    } catch  {
+    } catch {
       setSearchResults([]);
       setHasSearched(true);
     }
   };
-  
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
@@ -104,7 +101,7 @@ export default function MerchantComponent({ searchParams }: Props) {
           children: isLoading ? (
             <p className="text-center text-gray-500 mt-4">Cargando...</p>
           ) : (
-            <TableComponent data={initialMerchants} columns={merchantColumns} onEdit={handleOpenMerchantForm} simpleOutput={false} />
+            <TableComponent data={initialMerchants} columns={merchantColumns} onEdit={handleOpenMerchantForm} simpleOutput={simpleOutput} />
           ),
         },
         {
@@ -112,7 +109,17 @@ export default function MerchantComponent({ searchParams }: Props) {
           label: "Buscar",
           children: (
             <Card>
-              <SearchMerchantForm onSearch={handleSearch} />
+              <SearchForm
+                fields={[
+                  { key: "name", label: "Buscar por Nombre", placeholder: "Nombre del merchant" },
+                  { key: "clientId", label: "Buscar por Client ID", placeholder: "ID del cliente asociado" },
+                  { key: "id", label: "Buscar por Merchant ID", placeholder: "ID del merchant" },
+                ]}
+                onSearch={handleSearch}
+                errorMessage="Merchant no encontrado."
+                title="Buscar Merchant"
+                simpleOutput={simpleOutput}
+              />
               {hasSearched ? (
                 searchResults.length > 0 ? (
                   <TableComponent
@@ -131,13 +138,33 @@ export default function MerchantComponent({ searchParams }: Props) {
           ),
         },
       ]} />
-      <MerchantForm
-        isOpen={isMerchantFormOpen}
-        onClose={() => setMerchantFormOpen(false)}
-        merchantData={merchantToEdit || undefined}
-        onUpdateMerchant={handleUpdateMerchant}
-        onCreateMerchant={(newMerchant) => setInitialMerchants([...initialMerchants, newMerchant])}
-      />
+      <GenericForm
+  isOpen={isMerchantFormOpen}
+  onClose={() => setMerchantFormOpen(false)}
+  entityData={merchantToEdit || undefined}
+  onUpdateEntity={handleUpdateMerchant}
+  onCreateEntity={(newMerchant) => setInitialMerchants([...initialMerchants, newMerchant])}
+  entityType="merchant"
+  fields={[
+    { key: "id", label: "ID", disabled: true },
+    { key: "name", label: "Nombre", required: true },
+    { key: "address", label: "Dirección", required: true },
+    {
+      key: "merchantType",
+      label: "Tipo de Merchant",
+      type: "select",
+      required: true,
+      options: [
+        { value: "MERCHANT_TYPE_PERSONAL_SERVICES", label: "Servicios Personales" },
+        { value: "MERCHANT_TYPE_FINANCIAL_SERVICES", label: "Servicios Financieros" },
+      ],
+    },
+    { key: "clientId", label: "ID del Cliente", required: true },
+  ]}
+  createEntity={(values) => createMerchant(values)}
+  updateEntity={(id, values) => updateMerchant(id, values)}
+/>
+
     </div>
   );
 }
