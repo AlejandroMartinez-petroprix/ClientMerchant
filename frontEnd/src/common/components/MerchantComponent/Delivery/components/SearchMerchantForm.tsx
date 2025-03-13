@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Input, Checkbox } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useDebouncedCallback } from "use-debounce";
-import merchantsUseCases from "@/service/src/application/queries/lib/merchants";
-import { Merchant } from "../../../MerchantComponent/Delivery/interface";
 
 interface SearchMerchantFormProps {
-  setMerchants: (merchants: Merchant[]) => void;
-  updateSearchParams: (key: string, value: string) => void;
+  onSearch: (filters: { name?: string; clientId?: string; id?: string }, simpleOutput: boolean) => Promise<void>;
 }
 
-const SearchMerchantForm: React.FC<SearchMerchantFormProps> = ({ setMerchants, updateSearchParams }) => {
+const SearchMerchantForm: React.FC<SearchMerchantFormProps> = ({ onSearch }) => {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const [search, setSearch] = useState({
     name: searchParams.get("name") || "",
     clientId: searchParams.get("clientId") || "",
@@ -22,48 +22,46 @@ const SearchMerchantForm: React.FC<SearchMerchantFormProps> = ({ setMerchants, u
   });
 
   const [simpleOutput, setSimpleOutput] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateSearchParams = (newSearch: typeof search) => {
+    const params = new URLSearchParams();
+
+    if (newSearch.name) params.set("name", newSearch.name);
+    if (newSearch.clientId) params.set("clientId", newSearch.clientId);
+    if (newSearch.id) params.set("id", newSearch.id);
+
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const debouncedSearch = useDebouncedCallback(async () => {
     setError(null);
-    setHasSearched(false);
-
-    const signal = new AbortController().signal;
-
-    if (!search.name && !search.clientId && !search.id) {
-      setMerchants([]);
-      return;
-    }
-
     setHasSearched(true);
 
+    const filters = {
+      name: search.name.trim() || undefined,
+      clientId: search.clientId.trim() || undefined,
+      id: search.id.trim() || undefined,
+    };
+
     try {
-      let response: Merchant[] = [];
-
-      if (search.name) {
-        response = await merchantsUseCases.searchMerchantsByName(signal, search.name);
-      } else if (search.clientId) {
-        response = await merchantsUseCases.getMerchantsByClientId(signal, search.clientId);
-      } else if (search.id) {
-        const merchant = await merchantsUseCases.getMerchantById(signal, search.id, simpleOutput);
-        response = merchant ? [merchant] : [];
-      }
-
-      if (!response || response.length === 0) {
-        throw new Error("No se encontraron merchants.");
-      }
-
-      setMerchants(response);
+      await onSearch(filters, simpleOutput);
     } catch {
       setError("Merchant no encontrado.");
-      setMerchants([]);
     }
   }, 500);
 
-  useEffect(() => {
+  const handleChange = (key: keyof typeof search, value: string) => {
+    setSearch((prevSearch) => ({ ...prevSearch, [key]: value }));
+    updateSearchParams({ ...search, [key]: value });
     debouncedSearch();
-  }, [search, simpleOutput, debouncedSearch]);
+  };
+
+  const handleSimpleOutputChange = (checked: boolean) => {
+    setSimpleOutput(checked);
+    debouncedSearch();
+  };
 
   return (
     <div className="p-4 shadow rounded">
@@ -72,54 +70,37 @@ const SearchMerchantForm: React.FC<SearchMerchantFormProps> = ({ setMerchants, u
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div>
           <label className="block font-medium">Buscar por Nombre</label>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Nombre del merchant"
-              value={search.name}
-              onChange={(e) => {
-                setSearch({ name: e.target.value, clientId: "", id: "" });
-                updateSearchParams("name", e.target.value);
-              }}
-              prefix={<SearchOutlined />}
-            />
-          </div>
+          <Input
+            placeholder="Nombre del merchant"
+            value={search.name}
+            onChange={(e) => handleChange("name", e.target.value)}
+            prefix={<SearchOutlined />}
+          />
         </div>
 
         <div>
           <label className="block font-medium">Buscar por Client ID</label>
-          <div className="flex gap-2">
-            <Input
-              placeholder="ID del cliente asociado"
-              value={search.clientId}
-              onChange={(e) => {
-                setSearch({ name: "", clientId: e.target.value, id: "" });
-                updateSearchParams("clientId", e.target.value);
-              }}
-              prefix={<SearchOutlined />}
-            />
-          </div>
+          <Input
+            placeholder="ID del cliente asociado"
+            value={search.clientId}
+            onChange={(e) => handleChange("clientId", e.target.value)}
+            prefix={<SearchOutlined />}
+          />
         </div>
 
         <div>
           <label className="block font-medium">Buscar por Merchant ID</label>
-          <div className="flex gap-2">
-            <Input
-              placeholder="ID del merchant"
-              value={search.id}
-              onChange={(e) => {
-                setSearch({ name: "", clientId: "", id: e.target.value });
-                updateSearchParams("id", e.target.value);
-              }}
-              prefix={<SearchOutlined />}
-            />
-          </div>
-          <Checkbox checked={simpleOutput} onChange={(e) => setSimpleOutput(e.target.checked)}>
-            Activar Simple Output
+          <Input
+            placeholder="ID del merchant"
+            value={search.id}
+            onChange={(e) => handleChange("id", e.target.value)}
+            prefix={<SearchOutlined />}
+          />
+        <Checkbox checked={simpleOutput} onChange={(e) => handleSimpleOutputChange(e.target.checked)}>
+        Activar Simple Output
           </Checkbox>
         </div>
       </div>
-
-
 
       {hasSearched && error && <p className="text-red-500">{error}</p>}
     </div>

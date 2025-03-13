@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect } from "react";
 import { Modal, Input, Form, Button, message } from "antd";
 import { Client } from "../interface";
@@ -25,34 +27,31 @@ const ClientForm: React.FC<ClientFormProps> = ({ isOpen, onClose, clientData, on
   }, [clientData, form]);
 
   const handleFinish = async (values: Partial<Client>) => {
-    if (isEditing) {
-      try {
-        const updatedClient = await updateClient(clientData!.id, values, token);
-        if (updatedClient) {
-          onUpdateClient(updatedClient);
-          message.success("Cliente editado correctamente");
-          onClose();
-        } else {
-          throw new Error("No se pudo actualizar el cliente");
-        }
-      } catch  {
-        message.error("Error al actualizar el cliente");
+    try {
+      let client;
+      if (isEditing && clientData) {
+        client = await updateClient(clientData.id, values, token);
+      } else {
+        client = await createClient(values, token);
       }
-    } else {
-      try {
-        const newClient = await createClient(values, token);
-        if (newClient) {
-          onCreateClient(newClient);
-          message.success("Cliente creado correctamente");
-          onClose();
+  
+      if (client) {
+        if (isEditing) {
+          onUpdateClient(client);
         } else {
-          throw new Error("No se pudo crear el cliente");
+          onCreateClient(client);
         }
-      } catch  {
-        message.error("Error al crear el cliente");
+        message.success(`Cliente ${isEditing ? "editado" : "creado"} correctamente`);
+        onClose();
+      } else {
+        throw new Error(`No se pudo ${isEditing ? "actualizar" : "crear"} el cliente`);
       }
+    } catch {
+      message.error(`Error al ${isEditing ? "actualizar" : "crear"} el cliente`);
     }
   };
+  
+
 
   return (
     <Modal

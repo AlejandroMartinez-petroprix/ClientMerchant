@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Tabs, Card, Button } from "antd";
-import TableComponent from "@/common/components/TableComponent/Delivery/components/TableComponent";
+import TableComponent from "@/common/components/TableComponent";
 import SearchClientForm from "./components/SearchClientForm";
 import  ClientForm  from "./components/ClientForm";
 import { Client } from "../Delivery/interface";
-import { fetchAllClients, searchClients } from "../Infrastructure/clients";
+import { getClients } from "../Infrastructure/clients";
 import { useAuth } from "@/context/AuthContext";
 
 interface Props {
@@ -34,10 +34,8 @@ export default function ClientComponent({ searchParams }: Props) {
 
       setIsLoading(true);
       try {
-        const fetchedClients = await fetchAllClients(token);
+        const fetchedClients = await getClients({},token);
         setInitialClients(fetchedClients); 
-      } catch (error) {
-        console.error("Error al obtener clientes:", error);
       } finally {
         setIsLoading(false);
       }
@@ -67,18 +65,9 @@ export default function ClientComponent({ searchParams }: Props) {
       setHasSearched(false);
       return;
     }
-
+  
     try {
-      let results: Client[] = [];
-
-      if (filters.name) {
-        results = await searchClients({ name: filters.name }, token);
-      } else if (filters.email) {
-        results = await searchClients({ email: filters.email }, token);
-      } else if (filters.id) {
-        results = await searchClients({ id: filters.id }, token);
-      }
-
+      const results: Client[] = await getClients(filters, token, simpleOutputValue);
       setSimpleOutput(simpleOutputValue);
       setSearchResults(results);
       setHasSearched(true);
@@ -87,6 +76,7 @@ export default function ClientComponent({ searchParams }: Props) {
       setHasSearched(true);
     }
   };
+  
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
