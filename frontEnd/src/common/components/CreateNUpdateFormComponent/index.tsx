@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Modal, Input, Select, Form, Button, message } from "antd";
+import { Modal, Input, Select, Form, Button,App } from "antd";
 
 interface GenericFormProps<T> {
   isOpen: boolean;
@@ -38,6 +38,7 @@ const GenericForm = <T extends { id?: string }>({
 }: GenericFormProps<T>) => {
   const [form] = Form.useForm();
   const isEditing = Boolean(entityData);
+  const { message } = App.useApp();
 
   useEffect(() => {
     if (entityData) {
@@ -50,38 +51,44 @@ const GenericForm = <T extends { id?: string }>({
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
+      
       let entity;
-
       if (isEditing && entityData?.id) {
         entity = await updateEntity(entityData.id, values);
         if (entity) {
           onUpdateEntity(entity);
-          message.success(`${entityType === "client" ? "Cliente" : "Merchant"} actualizado con éxito`);
+          message.success(`${entityType === "client" ? "Cliente" : "Merchant"} actualizado con éxito`, 3);
         }
       } else {
         entity = await createEntity(values);
         if (entity) {
           onCreateEntity(entity);
-          message.success(`${entityType === "client" ? "Cliente" : "Merchant"} creado con éxito`);
+          message.success(`${entityType === "client" ? "Cliente" : "Merchant"} creado con éxito`, 3);
         }
       }
 
-      onClose();
+      if (entity) {
+        form.resetFields();
+        onClose(); 
+      }
     } catch {
-      message.error(`Error al ${isEditing ? "actualizar" : "crear"} el ${entityType === "client" ? "cliente" : "merchant"}`);
+      message.error(`Error al ${isEditing ? "actualizar" : "crear"} ${entityType === "client" ? "cliente" : "merchant"}`, 3);
     }
   };
 
   return (
     <Modal
+      forceRender 
       open={isOpen}
       onCancel={onClose}
-      onOk={handleSubmit}
       title={isEditing ? `Editar ${entityType === "client" ? "Cliente" : "Merchant"}` : `Nuevo ${entityType === "client" ? "Cliente" : "Merchant"}`}
-      forceRender
       footer={[
-        <Button key="cancel" onClick={onClose}>Cancelar</Button>,
-        <Button key="submit" type="primary" onClick={() => form.submit()}>OK</Button>
+        <Button key="cancel" onClick={onClose}>
+          Cancelar
+        </Button>,
+        <Button key="submit" type="primary" onClick={handleSubmit}>
+          OK
+        </Button>,
       ]}
     >
       <Form form={form} layout="vertical">
