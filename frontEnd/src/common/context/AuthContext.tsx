@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { message } from "antd";
+import { toast } from "sonner"; 
+import {jwtDecode} from "jwt-decode"; 
 
 interface AuthContextProps {
   token: string | null;
@@ -20,12 +21,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  const checkTokenAge = (newToken: string) => {
+    try {
+      const decoded: { age: number } = jwtDecode(newToken);
+      const age = decoded.age;
+
+      if (age < 18) {
+        toast.error("Cliente <18 - Acceso restringido.");
+        setToken(null);
+      } else {
+        toast.success("Cliente >18 - Acceso permitido.");
+      }
+    } catch  {
+      toast.error("Token inválido.");
+      setToken(null);
+    }
+  };
+
   const setToken = (newToken: string | null) => {
     if (typeof window !== "undefined") {
       if (newToken) {
         const formattedToken = newToken.startsWith("Bearer ") ? newToken : `Bearer ${newToken}`;
         localStorage.setItem("token", formattedToken);
         setTokenState(formattedToken);
+
+        checkTokenAge(formattedToken);
       } else {
         localStorage.removeItem("token");
         setTokenState(null);
@@ -35,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setToken(null);
-    message.info("Sesión cerrada.");
+    toast.info("🔓 Sesión cerrada.");
   };
 
   return (

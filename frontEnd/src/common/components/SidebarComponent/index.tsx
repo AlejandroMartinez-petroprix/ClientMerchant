@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Layout, Menu, Button, Switch, Modal, Input, message } from "antd";
+import { Layout, Menu, Button, Switch, Modal, Input } from "antd";
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -14,7 +14,7 @@ import {
   LogoutOutlined
 } from "@ant-design/icons";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/common/context/AuthContext";
 
 const { Sider } = Layout;
 
@@ -36,11 +36,8 @@ const Sidebar: React.FC<SidebarProps> = ({ theme, toggleTheme }) => {
   const handleTokenSubmit = () => {
     if (tempToken.trim()) {
       setToken(tempToken);
-      message.success("Token guardado correctamente");
       setIsModalOpen(false);
       setTempToken("");
-    } else {
-      message.error("Introduce un token válido");
     }
   };
 
