@@ -139,31 +139,32 @@ export default function MerchantComponent({ searchParams }: Props) {
         },
       ]} />
       <GenericForm
-  isOpen={isMerchantFormOpen}
-  onClose={() => setMerchantFormOpen(false)}
-  entityData={merchantToEdit || undefined}
-  onUpdateEntity={handleUpdateMerchant}
-  onCreateEntity={(newMerchant) => setInitialMerchants([...initialMerchants, newMerchant])}
-  entityType="merchant"
-  fields={[
-    { key: "id", label: "ID", disabled: true },
-    { key: "name", label: "Nombre", required: true },
-    { key: "address", label: "Dirección", required: true },
-    {
-      key: "merchantType",
-      label: "Tipo de Merchant",
-      type: "select",
-      required: true,
-      options: [
-        { value: "MERCHANT_TYPE_PERSONAL_SERVICES", label: "Servicios Personales" },
-        { value: "MERCHANT_TYPE_FINANCIAL_SERVICES", label: "Servicios Financieros" },
-      ],
-    },
-    { key: "clientId", label: "ID del Cliente", required: true },
-  ]}
-  createEntity={(values) => createMerchant(values)}
-  updateEntity={(id, values) => updateMerchant(id, values)}
-/>
+        isOpen={isMerchantFormOpen}
+        onClose={() => setMerchantFormOpen(false)}
+        entityData={merchantToEdit || undefined}
+        onUpdateEntity={handleUpdateMerchant}
+        onCreateEntity={(newMerchant) => setInitialMerchants([...initialMerchants, newMerchant])}
+        entityType="merchant"
+        fields={[
+          ...(merchantToEdit ? [{ key: "id" as keyof Merchant, label: "ID", disabled: true }] : []), // Solo en edición
+          { key: "name" as keyof Merchant, label: "Nombre", required: true },
+          { key: "address" as keyof Merchant, label: "Dirección", required: true },
+          {
+            key: "merchantType" as keyof Merchant,
+            label: "Tipo de Merchant",
+            type: "select",
+            required: true,
+            options: [
+              { value: "MERCHANT_TYPE_PERSONAL_SERVICES", label: "Servicios Personales" },
+              { value: "MERCHANT_TYPE_FINANCIAL_SERVICES", label: "Servicios Financieros" },
+            ],
+          },
+          { key: "clientId" as keyof Merchant, label: "ID del Cliente", required: true },
+        ]}
+        createEntity={(values) => createMerchant(values)}
+        updateEntity={(id, values) => updateMerchant(id, values)}
+      />
+
 
     </div>
   );
