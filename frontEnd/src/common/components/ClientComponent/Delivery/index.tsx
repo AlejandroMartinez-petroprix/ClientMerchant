@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Tabs, Card, Button } from "antd";
 import TableComponent from "@/common/components/TableComponent";
 import SearchForm from "@/common/components/SearchFormComponent";
-import GenericForm from "@/common/components/FormComponent"; 
+import GenericForm from "@/common/components/CreateNUpdateFormComponent"; 
 import { Client } from "../Delivery/interface";
 import { getClients, createClient, updateClient } from "../Infrastructure/clients"; 
 import { useAuth } from "@/context/AuthContext";

@@ -69,8 +69,8 @@ const SearchForm: React.FC<SearchFormProps> = ({ fields, onSearch, errorMessage,
   return (
     <div className="p-4 shadow rounded">
       <h2 className="text-xl font-bold mb-4">{title}</h2>
-
-      <div className={`grid grid-cols-${fields.length} gap-4 mb-4`}>
+  
+      <div className="grid grid-cols-3 gap-4 mb-4">
         {fields.map((field) => (
           <div key={field.key} className="flex flex-col">
             <label className="block font-medium">{field.label}</label>
@@ -81,7 +81,6 @@ const SearchForm: React.FC<SearchFormProps> = ({ fields, onSearch, errorMessage,
               prefix={<SearchOutlined />}
               type={field.type || "text"}
             />
-
             {field.key === "id" && (
               <Checkbox
                 checked={localSimpleOutput}
@@ -94,10 +93,11 @@ const SearchForm: React.FC<SearchFormProps> = ({ fields, onSearch, errorMessage,
           </div>
         ))}
       </div>
-
+  
       {hasSearched && error && <p className="text-red-500">{error}</p>}
     </div>
   );
+  
 };
 
 export default SearchForm;

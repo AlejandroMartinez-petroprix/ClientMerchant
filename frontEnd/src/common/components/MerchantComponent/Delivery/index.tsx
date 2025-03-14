@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Tabs, Card, Button } from "antd";
 import TableComponent from "@/common/components/TableComponent";
 import SearchForm from "@/common/components/SearchFormComponent";
-import GenericForm from "../../FormComponent";
+import GenericForm from "../../CreateNUpdateFormComponent";
 import { Merchant } from "../Delivery/interface";
 import { getMerchants,createMerchant, updateMerchant } from "../Infrastructure/merchants";
 
