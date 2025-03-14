@@ -55,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setToken(null);
-    toast.info("🔓 Sesión cerrada.");
+    toast.info("Sesión cerrada.");
   };
 
   return (
