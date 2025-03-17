@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner"; 
-import {jwtDecode} from "jwt-decode"; 
+import { jwtDecode } from "jwt-decode"; 
+import { setCookie, destroyCookie, parseCookies } from "nookies";
 
 interface AuthContextProps {
   token: string | null;
@@ -17,7 +18,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setTokenState(localStorage.getItem("token"));
+      const cookies = parseCookies();
+      setTokenState(cookies.auth_token || null); // Leer el token desde las cookies en el cliente
     }
   }, []);
 
@@ -32,7 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         toast.success("Cliente >18 - Acceso permitido.");
       }
-    } catch  {
+    } catch {
       toast.error("Token inválido.");
       setToken(null);
     }
@@ -42,12 +44,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (typeof window !== "undefined") {
       if (newToken) {
         const formattedToken = newToken.startsWith("Bearer ") ? newToken : `Bearer ${newToken}`;
-        localStorage.setItem("token", formattedToken);
-        setTokenState(formattedToken);
+        
+        // Guardamos el token en las cookies
+        setCookie(null, "auth_token", formattedToken, {
+          maxAge: 60 * 60 * 24, // 1 día de duración
+          path: "/",
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Strict",
+        });
 
+        setTokenState(formattedToken);
         checkTokenAge(formattedToken);
       } else {
-        localStorage.removeItem("token");
+        destroyCookie(null, "auth_token"); // Eliminamos la cookie al cerrar sesión
         setTokenState(null);
       }
     }

@@ -1,54 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Tabs, Card, Button, Alert } from "antd";
 import TableComponent from "@/common/components/TableComponent";
 import SearchForm from "@/common/components/SearchFormComponent";
 import GenericForm from "@/common/components/CreateNUpdateFormComponent";
 import { Client } from "../Delivery/interface";
-import {
-  getClients,
-  createClient,
-  updateClient,
-} from "../Infrastructure/clients";
+import { createClient, updateClient } from "../Infrastructure/clients";
 import { useAuth } from "@/common/context/AuthContext";
 
 interface Props {
   searchParams: { name?: string; email?: string; id?: string };
+  initialClients: Client[];
 }
 
-export default function ClientComponent({ searchParams }: Props) {
+export default function ClientComponent({ searchParams, initialClients }: Props) {
   const { token } = useAuth();
   const [isClientFormOpen, setClientFormOpen] = useState(false);
   const [clientToEdit, setClientToEdit] = useState<Client | null>(null);
-  const [initialClients, setInitialClients] = useState<Client[]>([]);
-  const [searchResults, setSearchResults] = useState<Client[]>([]);
+  const [searchResults, setSearchResults] = useState<Client[]>(initialClients);
   const [activeTab, setActiveTab] = useState<string>("all");
-  const [isLoading, setIsLoading] = useState(true);
   const [hasSearched, setHasSearched] = useState(false);
   const [simpleOutput, setSimpleOutput] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-    const loadClients = async () => {
-      if (!token) {
-        setInitialClients([]);
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const fetchedClients = await getClients({}, token);
-        setInitialClients(fetchedClients);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadClients();
-  }, [token]);
 
   const handleOpenClientForm = (client?: Client) => {
     setClientToEdit(client || null);
@@ -56,45 +29,51 @@ export default function ClientComponent({ searchParams }: Props) {
   };
 
   const handleUpdateClient = (updatedClient: Client) => {
-    setInitialClients((prevClients) =>
+    setSearchResults((prevClients) =>
       prevClients.map((client) =>
         client.id === updatedClient.id ? updatedClient : client
       )
     );
   };
 
-  const handleSearch = async (
-    filters: { name?: string; email?: string; id?: string },
-    simpleOutputValue: boolean
-  ) => {
-    if (!token) return;
-    if (!filters.name && !filters.email && !filters.id) {
-      setSearchResults([]);
-      setHasSearched(false);
-      return;
-    }
-
-    try {
-      const results: Client[] = await getClients(
-        filters,
-        token,
-        simpleOutputValue
-      );
-      setSimpleOutput(simpleOutputValue);
-      setSearchResults(results);
-      setHasSearched(true);
-    } catch {
-      setSearchResults([]);
-      setHasSearched(true);
-    }
-  };
-
   const handleTabChange = (key: string) => {
     setActiveTab(key);
     if (key === "all") {
-      setSearchResults([]);
+      setSearchResults(initialClients);
       setHasSearched(false);
     }
+  };
+
+  const handleSearch = async (
+    filters: { name?: string; email?: string; id?: string },
+    simpleOutputValue: boolean
+  ): Promise<void> => {
+    return new Promise((resolve) => {
+      if (!token) {
+        resolve();
+        return;
+      }
+
+      if (!filters.name && !filters.email && !filters.id) {
+        setSearchResults([]);
+        setHasSearched(false);
+        resolve();
+        return;
+      }
+
+      const filteredResults = initialClients.filter((client) => {
+        return (
+          (filters.name && client.name.includes(filters.name)) ||
+          (filters.email && client.email.includes(filters.email)) ||
+          (filters.id && client.id === filters.id)
+        );
+      });
+
+      setSimpleOutput(simpleOutputValue);
+      setSearchResults(filteredResults);
+      setHasSearched(true);
+      resolve();
+    });
   };
 
   const clientColumns = [
@@ -104,18 +83,13 @@ export default function ClientComponent({ searchParams }: Props) {
     { title: "Teléfono", dataIndex: "phone", key: "phone" },
   ];
 
-  if (!isClient)
-    return <p className="text-center text-gray-500 mt-4">Cargando...</p>;
-
   const tabItems = [
     {
       key: "all",
       label: "Todos los Clientes",
-      children: isLoading ? (
-        <p className="text-center text-gray-500 mt-4">Cargando...</p>
-      ) : token ? (
+      children: token ? (
         <TableComponent
-          data={initialClients}
+          data={searchResults}
           columns={clientColumns}
           onEdit={handleOpenClientForm}
           simpleOutput={false}
@@ -139,22 +113,9 @@ export default function ClientComponent({ searchParams }: Props) {
         <Card>
           <SearchForm
             fields={[
-              {
-                key: "name",
-                label: "Buscar por Nombre",
-                placeholder: "Nombre del cliente",
-              },
-              {
-                key: "email",
-                label: "Buscar por Email",
-                placeholder: "Email del cliente",
-                type: "email",
-              },
-              {
-                key: "id",
-                label: "Buscar por ID",
-                placeholder: "ID del cliente",
-              },
+              { key: "name", label: "Buscar por Nombre", placeholder: "Nombre del cliente" },
+              { key: "email", label: "Buscar por Email", placeholder: "Email del cliente", type: "email" },
+              { key: "id", label: "Buscar por ID", placeholder: "ID del cliente" },
             ]}
             onSearch={handleSearch}
             errorMessage="Cliente no encontrado."
@@ -170,14 +131,10 @@ export default function ClientComponent({ searchParams }: Props) {
                 simpleOutput={searchParams?.id ? simpleOutput : false}
               />
             ) : (
-              <p className="text-center text-red-500 mt-4">
-                Cliente no encontrado.
-              </p>
+              <p className="text-center text-red-500 mt-4">Cliente no encontrado.</p>
             )
           ) : (
-            <p className="text-center text-gray-500 mt-4">
-              Aquí aparecerán los resultados de las búsquedas
-            </p>
+            <p className="text-center text-gray-500 mt-4">Aquí aparecerán los resultados de las búsquedas</p>
           )}
         </Card>
       ) : (
@@ -211,29 +168,15 @@ export default function ClientComponent({ searchParams }: Props) {
         onClose={() => setClientFormOpen(false)}
         entityData={clientToEdit || undefined}
         onUpdateEntity={handleUpdateClient}
-        onCreateEntity={(newClient) =>
-          setInitialClients([...initialClients, newClient])
-        }
+        onCreateEntity={(newClient) => setSearchResults([...searchResults, newClient])}
         entityType="client"
         fields={[
-          ...(clientToEdit
-            ? [{ key: "id" as keyof Client, label: "ID", disabled: true }]
-            : []),
-          {
-            key: "cifNifNie" as keyof Client,
-            label: "CIF/NIF/NIE",
-            required: true,
-            disabled: !!clientToEdit,
-          },
+          ...(clientToEdit ? [{ key: "id" as keyof Client, label: "ID", disabled: true }] : []),
+          { key: "cifNifNie" as keyof Client, label: "CIF/NIF/NIE", required: true, disabled: !!clientToEdit },
           { key: "name" as keyof Client, label: "Nombre", required: true },
           { key: "surname" as keyof Client, label: "Apellido" },
           { key: "phone" as keyof Client, label: "Teléfono", required: true },
-          {
-            key: "email" as keyof Client,
-            label: "Correo",
-            type: "email",
-            required: true,
-          },
+          { key: "email" as keyof Client, label: "Correo", type: "email", required: true },
         ]}
         createEntity={(values) => createClient(values, token)}
         updateEntity={(id, values) => updateClient(id, values, token)}

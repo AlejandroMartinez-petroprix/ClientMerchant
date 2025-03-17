@@ -35,7 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ theme, toggleTheme }) => {
 
   const handleTokenSubmit = () => {
     if (tempToken.trim()) {
-      setToken(tempToken);
+      setToken(tempToken); // `setToken` ya maneja las cookies
       setIsModalOpen(false);
       setTempToken("");
     }
@@ -112,7 +112,6 @@ const Sidebar: React.FC<SidebarProps> = ({ theme, toggleTheme }) => {
           {!collapsed && (token ? "Cerrar Sesión" : "Iniciar Sesión")}
         </Button>
       </div>
-
 
       {/* Modal de inicio de sesión */}
       <Modal
