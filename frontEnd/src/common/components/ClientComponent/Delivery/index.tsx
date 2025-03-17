@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, Card, Button, Alert } from "antd";
 import TableComponent from "@/common/components/TableComponent";
 import SearchForm from "@/common/components/SearchFormComponent";
@@ -22,6 +22,11 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
   const [activeTab, setActiveTab] = useState<string>("all");
   const [hasSearched, setHasSearched] = useState(false);
   const [simpleOutput, setSimpleOutput] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleOpenClientForm = (client?: Client) => {
     setClientToEdit(client || null);
@@ -82,6 +87,8 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
     { title: "Email", dataIndex: "email", key: "email" },
     { title: "Teléfono", dataIndex: "phone", key: "phone" },
   ];
+
+  if (!isClient) return <p className="text-center text-gray-500 mt-4">Cargando...</p>;
 
   const tabItems = [
     {
