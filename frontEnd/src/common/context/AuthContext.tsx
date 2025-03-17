@@ -63,9 +63,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    setToken(null);
+    destroyCookie(null, "auth_token"); 
+    setToken(null); 
     toast.info("Sesión cerrada.");
   };
+  
 
   return (
     <AuthContext.Provider value={{ token, setToken, logout }}>
