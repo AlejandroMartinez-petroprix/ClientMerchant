@@ -8,13 +8,12 @@ import { useDebouncedCallback } from "use-debounce";
 
 interface SearchFormProps {
   fields: { key: string; label: string; placeholder: string; type?: string }[];
-  onSearch: (filters: Record<string, string | undefined>, simpleOutput: boolean) => Promise<void>;
   errorMessage: string;
   title: string;
   simpleOutput: boolean;
 }
 
-const SearchForm: React.FC<SearchFormProps> = ({ fields, onSearch, errorMessage, title, simpleOutput }) => {
+const SearchForm: React.FC<SearchFormProps> = ({ fields, title, simpleOutput }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -44,15 +43,6 @@ const SearchForm: React.FC<SearchFormProps> = ({ fields, onSearch, errorMessage,
     setError(null);
     setHasSearched(true);
 
-    const filters = Object.fromEntries(
-      Object.entries(search).map(([key, value]) => [key, value.trim() || undefined])
-    );
-
-    try {
-      await onSearch(filters, localSimpleOutput);
-    } catch {
-      setError(errorMessage);
-    }
   }, 500);
 
   const handleChange = (key: string, value: string) => {
