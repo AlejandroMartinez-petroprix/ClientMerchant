@@ -11,28 +11,4 @@ export async function createMerchant(values: Partial<Merchant>): Promise<Merchan
   return await merchantsUseCases.createMerchant(signal, values);
 }
 
-export async function getMerchants(
-    filters: { name?: string; clientId?: string; id?: string } = {},
-    simpleOutput: boolean = false
-  ): Promise<Merchant[]> {
-    const signal = new AbortController().signal;
-  
-    if (Object.keys(filters).length === 0) {
-      return await merchantsUseCases.getAllMerchants(signal);
-    }
-
-    let response: Merchant | Merchant[] | null = null;
-
-    if (filters.id) {
-      response = await merchantsUseCases.getMerchantById(signal, filters.id, simpleOutput);
-    } else if (filters.name) {
-      response = await merchantsUseCases.searchMerchantsByName(signal, filters.name);
-    } else if (filters.clientId) {
-      response = await merchantsUseCases.getMerchantsByClientId(signal, filters.clientId);
-    }
-
-
-    return response ? (Array.isArray(response) ? response : [response]) : [];
-  }
-
   
