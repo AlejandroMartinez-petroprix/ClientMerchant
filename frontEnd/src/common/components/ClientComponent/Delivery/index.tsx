@@ -21,7 +21,7 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
   const [searchResults, setSearchResults] = useState<Client[]>(initialClients);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [hasSearched, setHasSearched] = useState(false);
-  const [simpleOutput, setSimpleOutput] = useState(false);
+  const [simpleOutput] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -49,37 +49,6 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
     }
   };
 
-  const handleSearch = async (
-    filters: { name?: string; email?: string; id?: string },
-    simpleOutputValue: boolean
-  ): Promise<void> => {
-    return new Promise((resolve) => {
-      if (!token) {
-        resolve();
-        return;
-      }
-
-      if (!filters.name && !filters.email && !filters.id) {
-        setSearchResults([]);
-        setHasSearched(false);
-        resolve();
-        return;
-      }
-
-      const filteredResults = initialClients.filter((client) => {
-        return (
-          (filters.name && client.name.includes(filters.name)) ||
-          (filters.email && client.email.includes(filters.email)) ||
-          (filters.id && client.id === filters.id)
-        );
-      });
-
-      setSimpleOutput(simpleOutputValue);
-      setSearchResults(filteredResults);
-      setHasSearched(true);
-      resolve();
-    });
-  };
 
   const clientColumns = [
     { title: "ID", dataIndex: "id", key: "id" },
@@ -124,7 +93,6 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
               { key: "email", label: "Buscar por Email", placeholder: "Email del cliente", type: "email" },
               { key: "id", label: "Buscar por ID", placeholder: "ID del cliente" },
             ]}
-            onSearch={handleSearch}
             errorMessage="Cliente no encontrado."
             title="Buscar Cliente"
             simpleOutput={simpleOutput}
