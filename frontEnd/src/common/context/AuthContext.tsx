@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner"; 
 import { jwtDecode } from "jwt-decode"; 
 import { setCookie, destroyCookie, parseCookies } from "nookies";
+import { useRouter } from "next/navigation";
 
 interface AuthContextProps {
   token: string | null;
@@ -15,6 +16,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setTokenState] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -55,6 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         setTokenState(formattedToken);
         checkTokenAge(formattedToken);
+        router.refresh();
       } else {
         destroyCookie(null, "auth_token");
         setTokenState(null);
