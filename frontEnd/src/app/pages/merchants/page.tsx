@@ -12,16 +12,18 @@ export default async function MerchantManagement({
   try {
     const { name, id, clientId } = searchParams;
 
-    if (name) {
-      merchants = await merchantsUseCases.searchMerchantsByName(undefined, name);
-    } else if (id) {
-      const merchant = await merchantsUseCases.getMerchantById(undefined, id);
-      merchants = merchant ? [merchant] : [];
-    } else if (clientId) {
-      merchants = await merchantsUseCases.getMerchantsByClientId(undefined, clientId);
-    } else {
-      merchants = await merchantsUseCases.getAllMerchants(undefined);
-    }
+    merchants = await (
+      name
+        ? merchantsUseCases.searchMerchantsByName(undefined, name)
+        : id
+          ? (async () => {
+              const merchant = await merchantsUseCases.getMerchantById(undefined, id);
+              return merchant ? [merchant] : [];
+            })()
+          : clientId
+            ? merchantsUseCases.getMerchantsByClientId(undefined, clientId)
+            : merchantsUseCases.getAllMerchants(undefined)
+    );
   } catch (error) {
     console.error("Error fetching merchants:", error);
     merchants = [];

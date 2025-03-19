@@ -12,19 +12,22 @@ export default async function ClientManagement({ searchParams }: { searchParams:
   let clients: Client[] = [];
 
   try {
-    if (!token) {
-      clients = [];
-    } else if (searchParams.id) {
-      const response = await clientsUseCases.getClientById(signal, searchParams.id, false, token);
-      clients = response ? [response] : [];
-    } else if (searchParams.name) {
-      clients = await clientsUseCases.searchClientsByName(signal, searchParams.name, token);
-    } else if (searchParams.email) {
-      const response = await clientsUseCases.findByEmail(signal, searchParams.email, token);
-      clients = response ? [response] : [];
-    } else {
-      clients = await clientsUseCases.getAllClients(signal, token);
-    }
+    clients = await (!token
+      ? Promise.resolve([])
+      : searchParams.id
+        ? (async () => {
+            const response = await clientsUseCases.getClientById(signal, searchParams.id, false, token);
+            return response ? [response] : [];
+          })()
+        : searchParams.name
+          ? clientsUseCases.searchClientsByName(signal, searchParams.name, token)
+          : searchParams.email
+            ? (async () => {
+                const response = await clientsUseCases.findByEmail(signal, searchParams.email, token);
+                return response ? [response] : [];
+              })()
+            : clientsUseCases.getAllClients(signal, token)
+    );
   } catch (error) {
     console.error("Error al obtener los clientes:", error);
     clients = [];
