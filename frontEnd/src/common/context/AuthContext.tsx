@@ -19,7 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (typeof window !== "undefined") {
       const cookies = parseCookies();
-      setTokenState(cookies.auth_token || null); // Leer el token desde las cookies en el cliente
+      setTokenState(cookies.auth_token || null); 
     }
   }, []);
 
@@ -56,13 +56,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setTokenState(formattedToken);
         checkTokenAge(formattedToken);
       } else {
-        destroyCookie(null, "auth_token"); // Eliminamos la cookie al cerrar sesión
+        destroyCookie(null, "auth_token");
         setTokenState(null);
       }
     }
   };
 
   const logout = () => {
+    document.cookie =
+      "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
     destroyCookie(null, "auth_token"); 
     setToken(null); 
     toast.info("Sesión cerrada.");
