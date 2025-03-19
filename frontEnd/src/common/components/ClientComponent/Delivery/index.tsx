@@ -8,6 +8,7 @@ import GenericForm from "@/common/components/CreateNUpdateFormComponent";
 import { Client } from "../Delivery/interface";
 import { createClient, updateClient } from "../Infrastructure/clients";
 import { useAuth } from "@/common/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface Props {
   searchParams: { name?: string; email?: string; id?: string };
@@ -21,12 +22,21 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
   const [searchResults, setSearchResults] = useState<Client[]>(initialClients);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [hasSearched, setHasSearched] = useState(false);
-  const [simpleOutput] = useState(false);
+  const [simpleOutput,setSimpleOutput] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    
+    if (Object.values(searchParams).some((value) => value !== undefined && value !== "")) {
+      setHasSearched(true);
+    } else {
+      setHasSearched(false);
+    }
+
+    setSearchResults(initialClients); 
+    setIsClient(true); 
+  }, [initialClients, searchParams]); 
 
   const handleOpenClientForm = (client?: Client) => {
     setClientToEdit(client || null);
@@ -44,6 +54,8 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
   const handleTabChange = (key: string) => {
     setActiveTab(key);
     if (key === "all") {
+      router.push("/pages/clients")
+      router.refresh()
       setSearchResults(initialClients);
       setHasSearched(false);
     }
@@ -96,6 +108,7 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
             errorMessage="Cliente no encontrado."
             title="Buscar Cliente"
             simpleOutput={simpleOutput}
+            onSimpleOutputChange={setSimpleOutput}
           />
           {hasSearched ? (
             searchResults.length > 0 ? (
@@ -103,7 +116,7 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
                 data={searchResults}
                 columns={clientColumns}
                 onEdit={handleOpenClientForm}
-                simpleOutput={searchParams?.id ? simpleOutput : false}
+                simpleOutput={simpleOutput}
               />
             ) : (
               <p className="text-center text-red-500 mt-4">Cliente no encontrado.</p>

@@ -14,19 +14,27 @@ interface Props {
   initialMerchants: Merchant[];
 }
 
-export default function MerchantComponent({ initialMerchants }: Props) {
+export default function MerchantComponent({ searchParams, initialMerchants }: Props) {
   const router = useRouter();
   const [isMerchantFormOpen, setMerchantFormOpen] = useState(false);
   const [merchantToEdit, setMerchantToEdit] = useState<Merchant | null>(null);
-  const [searchResults, setSearchResults] = useState<Merchant[]>([]);
-  const [simpleOutput] = useState(false); // Simple output para la búsqueda
+  const [searchResults, setSearchResults] = useState<Merchant[]>([]); 
+  const [simpleOutput,setSimpleOutput] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [isClient, setIsClient] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false); 
 
   useEffect(() => {
-    setSearchResults(initialMerchants); // Inicializa con los merchants pasados desde la página
-    setIsClient(true); // Evita problemas de hidratación
-  }, [initialMerchants]);
+    if (Object.values(searchParams).some((value) => value !== undefined && value !== "")) {
+      setHasSearched(true);
+    } else {
+      setHasSearched(false);
+    }
+
+    setSearchResults(initialMerchants); 
+    setIsClient(true);
+  }, [initialMerchants,searchParams]);
+
 
   const handleOpenMerchantForm = (merchant?: Merchant) => {
     setMerchantToEdit(merchant || null);
@@ -44,8 +52,8 @@ export default function MerchantComponent({ initialMerchants }: Props) {
   const handleTabChange = (key: string) => {
     setActiveTab(key);
     if (key === "all") {
-      router.push("/pages/merchants"); // Restablecemos la URL para mostrar todos los merchants
-      setSearchResults(initialMerchants); // Restauramos los merchants
+      router.push("/pages/merchants");
+      setSearchResults(initialMerchants);
     }
   };
 
@@ -76,7 +84,7 @@ export default function MerchantComponent({ initialMerchants }: Props) {
               data={searchResults}
               columns={merchantColumns}
               onEdit={handleOpenMerchantForm}
-              simpleOutput={simpleOutput} // Pasamos simpleOutput
+              simpleOutput={simpleOutput} 
             />
           ),
         },
@@ -93,17 +101,22 @@ export default function MerchantComponent({ initialMerchants }: Props) {
                 ]}
                 errorMessage="Merchant no encontrado."
                 title="Buscar Merchant"
-                simpleOutput={simpleOutput} // Pasamos simpleOutput
+                simpleOutput={simpleOutput}
+                onSimpleOutputChange={setSimpleOutput}
               />
-              {searchResults.length > 0 ? (
-                <TableComponent
-                  data={searchResults}
-                  columns={merchantColumns}
-                  onEdit={handleOpenMerchantForm}
-                  simpleOutput={simpleOutput}
-                />
+              {hasSearched ? (
+                searchResults.length > 0 ? (
+                  <TableComponent
+                    data={searchResults}
+                    columns={merchantColumns}
+                    onEdit={handleOpenMerchantForm}
+                    simpleOutput={simpleOutput}
+                  />
+                ) : (
+                  <p className="text-center text-red-500 mt-4">Merchant no encontrado.</p>
+                )
               ) : (
-                <p className="text-center text-red-500 mt-4">Merchant no encontrado.</p>
+                <p className="text-center text-gray-500 mt-4">Aquí aparecerán los resultados de las búsquedas</p>
               )}
             </Card>
           ),

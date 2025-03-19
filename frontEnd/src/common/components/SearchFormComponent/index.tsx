@@ -11,9 +11,10 @@ interface SearchFormProps {
   errorMessage: string;
   title: string;
   simpleOutput: boolean;
+  onSimpleOutputChange?: (checked: boolean) => void;
 }
 
-const SearchForm: React.FC<SearchFormProps> = ({ fields, title, simpleOutput }) => {
+const SearchForm: React.FC<SearchFormProps> = ({ fields, title, simpleOutput, onSimpleOutputChange }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -53,6 +54,9 @@ const SearchForm: React.FC<SearchFormProps> = ({ fields, title, simpleOutput }) 
 
   const handleSimpleOutputChange = (checked: boolean) => {
     setLocalSimpleOutput(checked);
+    if (onSimpleOutputChange) {
+      onSimpleOutputChange(checked);
+    }
     debouncedSearch();
   };
 
