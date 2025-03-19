@@ -21,19 +21,11 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
   const [clientToEdit, setClientToEdit] = useState<Client | null>(null);
   const [searchResults, setSearchResults] = useState<Client[]>(initialClients);
   const [activeTab, setActiveTab] = useState<string>("all");
-  const [hasSearched, setHasSearched] = useState(false);
   const [simpleOutput,setSimpleOutput] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    
-    if (Object.values(searchParams).some((value) => value !== undefined && value !== "")) {
-      setHasSearched(true);
-    } else {
-      setHasSearched(false);
-    }
-
     setSearchResults(initialClients); 
     setIsClient(true); 
   }, [initialClients, searchParams]); 
@@ -55,9 +47,7 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
     setActiveTab(key);
     if (key === "all") {
       router.push("/pages/clients")
-      router.refresh()
       setSearchResults(initialClients);
-      setHasSearched(false);
     }
   };
 
@@ -110,7 +100,7 @@ export default function ClientComponent({ searchParams, initialClients }: Props)
             simpleOutput={simpleOutput}
             onSimpleOutputChange={setSimpleOutput}
           />
-          {hasSearched ? (
+          {Object.values(searchParams).some(val => val && val.trim().length > 0) ? (
             searchResults.length > 0 ? (
               <TableComponent
                 data={searchResults}

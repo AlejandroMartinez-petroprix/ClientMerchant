@@ -22,15 +22,8 @@ export default function MerchantComponent({ searchParams, initialMerchants }: Pr
   const [simpleOutput,setSimpleOutput] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [isClient, setIsClient] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false); 
 
   useEffect(() => {
-    if (Object.values(searchParams).some((value) => value !== undefined && value !== "")) {
-      setHasSearched(true);
-    } else {
-      setHasSearched(false);
-    }
-
     setSearchResults(initialMerchants); 
     setIsClient(true);
   }, [initialMerchants,searchParams]);
@@ -104,7 +97,7 @@ export default function MerchantComponent({ searchParams, initialMerchants }: Pr
                 simpleOutput={simpleOutput}
                 onSimpleOutputChange={setSimpleOutput}
               />
-              {hasSearched ? (
+              {Object.values(searchParams).some(val => val && val.trim().length > 0) ? (
                 searchResults.length > 0 ? (
                   <TableComponent
                     data={searchResults}
