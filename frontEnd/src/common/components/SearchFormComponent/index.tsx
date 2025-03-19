@@ -19,7 +19,6 @@ const SearchForm: React.FC<SearchFormProps> = ({ fields, title, simpleOutput, on
   const pathname = usePathname();
   const router = useRouter();
 
-
   const [localSimpleOutput, setLocalSimpleOutput] = useState(simpleOutput);
   
   const initialState = fields.reduce((acc, field) => {
@@ -41,14 +40,13 @@ const SearchForm: React.FC<SearchFormProps> = ({ fields, title, simpleOutput, on
   };
 
   const debouncedSearch = useDebouncedCallback(async () => {
+    updateSearchParams(search);
     setError(null);
     setHasSearched(true);
-
   }, 500);
 
   const handleChange = (key: string, value: string) => {
     setSearch((prevSearch) => ({ ...prevSearch, [key]: value }));
-    updateSearchParams({ ...search, [key]: value });
     debouncedSearch();
   };
 
@@ -91,7 +89,6 @@ const SearchForm: React.FC<SearchFormProps> = ({ fields, title, simpleOutput, on
       {hasSearched && error && <p className="text-red-500">{error}</p>}
     </div>
   );
-  
 };
 
 export default SearchForm;
