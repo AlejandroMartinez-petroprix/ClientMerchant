@@ -18,7 +18,7 @@ export default function MerchantComponent({ searchParams, initialMerchants }: Pr
   const router = useRouter();
   const [isMerchantFormOpen, setMerchantFormOpen] = useState(false);
   const [merchantToEdit, setMerchantToEdit] = useState<Merchant | null>(null);
-  const [searchResults, setSearchResults] = useState<Merchant[]>([]); 
+  const [searchResults, setSearchResults] = useState<Merchant[]>(initialMerchants); 
   const [simpleOutput,setSimpleOutput] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [isClient, setIsClient] = useState(false);
